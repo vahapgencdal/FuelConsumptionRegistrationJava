@@ -4,15 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
-@ActiveProfiles("logging-test")
+@TestPropertySource(locations="classpath:test.properties")
+@ActiveProfiles("logback-test")
 @Slf4j
 class FuelConsumptionApplicationTests {
 
 	@Test
 	void contextLoads() {
-		log.error("asdasdasdasd");
+		log.info("asdasdasdasd");
 	}
 
 }
