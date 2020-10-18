@@ -18,7 +18,7 @@ public class RestConfig {
     private AddQueryParameterInterceptor addQueryParameterInterceptor;
 
 
-    @Bean
+    /*@Bean
     public RestTemplate ipStackRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
 
@@ -29,7 +29,7 @@ public class RestConfig {
         interceptors.add(addQueryParameterInterceptor);
         restTemplate.setInterceptors(interceptors);
         return restTemplate;
-    }
+    }*/
 
 
 }
