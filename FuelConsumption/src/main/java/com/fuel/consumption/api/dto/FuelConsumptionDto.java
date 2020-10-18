@@ -1,12 +1,12 @@
 package com.fuel.consumption.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fuel.consumption.model.entity.FuelConsumption;
 import com.fuel.consumption.util.FuelType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -25,12 +25,12 @@ public class FuelConsumptionDto {
     @ApiModelProperty(notes="Fuel Volume is mandatory attribute, have to be positive number")
     private BigDecimal fuelVolume;
 
-    @ApiModelProperty(notes="Fuel Consumption Date is mandatory attribute, have to be  mm.dd.YYYY date format")
+    @ApiModelProperty(notes="Fuel Consumption Date is mandatory attribute, have to be  yyyy-MM-dd date format")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate consumptionDate;
 
     @ApiModelProperty(notes="Driver Id is mandatory attribute, have to be positive number")
     private Long driverId;
-
 
     public static FuelConsumptionDto toDto(FuelConsumption entity){
         FuelConsumptionDto dto = new FuelConsumptionDto();
@@ -43,11 +43,13 @@ public class FuelConsumptionDto {
         return dto;
     }
 
-    public static void updateEntity(FuelConsumption entity, FuelConsumptionDto dto){
+    public static FuelConsumption toEntity(FuelConsumptionDto dto){
+        FuelConsumption entity = new FuelConsumption();
         entity.setFuelType(FuelType.valueOf(dto.getFuelType()));
-        entity.setFuelPrice(dto.getFuelPrice());
-        entity.setFuelVolume(dto.getFuelVolume());
+        entity.setFuelPrice(dto.getFuelPrice().setScale(4,BigDecimal.ROUND_CEILING));
+        entity.setFuelVolume(dto.getFuelVolume().setScale(4,BigDecimal.ROUND_CEILING));
         entity.setConsumptionDate(dto.getConsumptionDate());
         entity.setDriverId(dto.getDriverId());
+        return entity;
     }
 }

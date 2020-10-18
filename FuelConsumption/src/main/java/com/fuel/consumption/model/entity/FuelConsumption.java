@@ -1,6 +1,5 @@
 package com.fuel.consumption.model.entity;
 
-import com.fuel.consumption.util.CurrencyType;
 import com.fuel.consumption.util.FuelType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,20 +22,20 @@ import java.time.LocalDate;
 @Table(name = "FUEL_CONSUMPTION")
 public class FuelConsumption extends BaseEntity {
 
-    @Column(name = "FUEL_TYPE")
+    @Column(name = "FUEL_TYPE", nullable = false)
     @Enumerated(EnumType.STRING)
     private FuelType fuelType;
 
-    @Column(name = "FUEL_PRICE")
+    @Column(name = "FUEL_PRICE", nullable = false)
     private BigDecimal fuelPrice;
 
-    @Column(name = "FUEL_VOLUME")
+    @Column(name = "FUEL_VOLUME", nullable = false)
     private BigDecimal fuelVolume;
 
-    @Column(name = "CONSUMPTION_DATE")
+    @Column(name = "CONSUMPTION_DATE", nullable = false)
     private LocalDate consumptionDate;
 
-    @Column(name = "DRIVER_ID")
+    @Column(name = "DRIVER_ID", nullable = false)
     private Long driverId;
 
 }

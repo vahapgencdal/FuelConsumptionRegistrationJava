@@ -1,0 +1,10 @@
+[
+  {
+    "fuelType":"DIESEL",
+    "fuelPrice":"1.12",
+    "fuelVolume":"40.4",
+    "consumptionDate":"2018-14-01",
+    "driverId":"123"
+
+  }
+]
