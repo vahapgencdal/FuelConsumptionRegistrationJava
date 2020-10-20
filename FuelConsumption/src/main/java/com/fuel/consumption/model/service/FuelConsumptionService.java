@@ -1,33 +1,34 @@
 package com.fuel.consumption.model.service;
 
-import com.fuel.consumption.api.dto.FuelConsumptionDto;
-import com.fuel.consumption.api.dto.FuelConsumptionMonthlyStatisticDto;
-import com.fuel.consumption.api.dto.FuelConsumptionRecordSpecifiedByMonthDto;
-import com.fuel.consumption.api.dto.TotalSpentAmountOfMoneyDto;
+import com.fuel.consumption.api.dto.*;
+import com.fuel.consumption.model.entity.FuelConsumption;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
+
+/**
+ * @author Vahap Gencdal
+ * @email avahap19@gmail.com
+ */
 
 public interface FuelConsumptionService {
 
-    void insert(FuelConsumptionDto fuelConsumptionDto);
+    FuelConsumption insert(FuelConsumptionPostRequest fuelConsumptionDto);
 
-    void bulkInsert(List<FuelConsumptionDto> fuelConsumptionDtoList);
+    List<FuelConsumption> insertAll(List<FuelConsumptionPostRequest> fuelConsumptionDtoList);
 
-    Map<Integer, BigDecimal> findTotalSpentAmountOfMoneyGroupedByMonth();
+    List<TotalSpentAmountOfMoneyResponse> findTotalSpentAmountOfMoneyGroupedByMonth();
 
-    Map<Integer, BigDecimal> findTotalSpentAmountOfMoneyByDriverIdAndGroupedByMonth(long driverId);
+    List<TotalSpentAmountOfMoneyResponse> findTotalSpentAmountOfMoneyByDriverIdAndGroupedByMonth(long driverId);
 
     List<FuelConsumptionRecordSpecifiedByMonthDto> findFuelConsumptionRecordsByMonth(int month);
 
-    List<FuelConsumptionRecordSpecifiedByMonthDto> findFuelConsumptionRecordsByMonthAndDriverId(int month, int driverId);
+    List<FuelConsumptionRecordSpecifiedByMonthDto> findFuelConsumptionRecordsByMonthAndDriverId(int month, long driverId);
 
-    List<FuelConsumptionMonthlyStatisticDto> findEachMonthFuelConsumptionStatisticsGroupedByFuelType();
+    List<FuelConsumptionStatisticResponse> findEachMonthFuelConsumptionStatisticsGroupedByFuelType();
 
-    List<FuelConsumptionMonthlyStatisticDto> findEachMonthFuelConsumptionStatisticsByDriverIdAndGroupedByFuelType(int driverId);
+    List<FuelConsumptionStatisticResponse> findEachMonthFuelConsumptionStatisticsByDriverIdAndGroupedByFuelType(long driverId);
 
-    List<FuelConsumptionDto> findAll();
+    List<FuelConsumptionPostRequest> findAll();
 
-    List<FuelConsumptionDto> findAllByDriverId(long driverId);
+    List<FuelConsumptionPostRequest> findAllByDriverId(long driverId);
 }

@@ -9,6 +9,11 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+/**
+ * @author Vahap Gencdal
+ * @email avahap19@gmail.com
+ */
+
 @ApiModel(description="Total Spent Amount of Money Grouped By Month Service Data Transaction Object. ")
 @Data
 public class TotalSpentAmountOfMoneyDto {

@@ -1,0 +1,40 @@
+[
+    {
+      "fuelType":"DIESEL",
+      "fuelPrice":"1.12",
+      "fuelVolume":"10.3",
+      "consumptionDate":"2017-10-02",
+      "driverId":"123"
+
+    },
+    {
+      "fuelType":"DIESEL",
+      "fuelPrice":"1.15",
+      "fuelVolume":"10.6",
+      "consumptionDate":"2018-10-01",
+      "driverId":"123"
+
+    },
+    {
+      "fuelType":"DIESEL",
+      "fuelPrice":"1.32",
+      "fuelVolume":"30.4",
+      "consumptionDate":"2018-11-01",
+      "driverId":"123"
+    },
+    {
+      "fuelType":"DIESEL",
+      "fuelPrice":"1.12",
+      "fuelVolume":"20.7",
+      "consumptionDate":"2018-11-02",
+      "driverId":"123"
+
+    },
+    {
+      "fuelType":"DIESEL",
+      "fuelPrice":"1.18",
+      "fuelVolume":"40.5",
+      "consumptionDate":"2019-01-01",
+      "driverId":"123"
+    }
+]

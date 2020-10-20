@@ -10,9 +10,16 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * @author Vahap Gencdal
+ * @email avahap19@gmail.com
+ */
+
 @ApiModel(description="All details about the fuel consumption. ")
 @Data
-public class FuelConsumptionDto {
+@AllArgsConstructor
+@NoArgsConstructor
+public class FuelConsumptionPostRequest {
 
     private Long id;
 
@@ -32,8 +39,8 @@ public class FuelConsumptionDto {
     @ApiModelProperty(notes="Driver Id is mandatory attribute, have to be positive number")
     private Long driverId;
 
-    public static FuelConsumptionDto toDto(FuelConsumption entity){
-        FuelConsumptionDto dto = new FuelConsumptionDto();
+    public static FuelConsumptionPostRequest toDto(FuelConsumption entity){
+        FuelConsumptionPostRequest dto = new FuelConsumptionPostRequest();
         dto.setId(entity.getId());
         dto.setFuelType(entity.getFuelType().name());
         dto.setFuelPrice(entity.getFuelPrice());
@@ -43,13 +50,21 @@ public class FuelConsumptionDto {
         return dto;
     }
 
-    public static FuelConsumption toEntity(FuelConsumptionDto dto){
+    public static FuelConsumption toEntity(FuelConsumptionPostRequest dto){
         FuelConsumption entity = new FuelConsumption();
         entity.setFuelType(FuelType.valueOf(dto.getFuelType()));
-        entity.setFuelPrice(dto.getFuelPrice().setScale(4,BigDecimal.ROUND_CEILING));
-        entity.setFuelVolume(dto.getFuelVolume().setScale(4,BigDecimal.ROUND_CEILING));
+        entity.setFuelPrice(dto.getFuelPrice());
+        entity.setFuelVolume(dto.getFuelVolume());
         entity.setConsumptionDate(dto.getConsumptionDate());
         entity.setDriverId(dto.getDriverId());
         return entity;
+    }
+
+    public FuelConsumptionPostRequest(String fuelType, BigDecimal fuelPrice, BigDecimal fuelVolume, LocalDate consumptionDate, Long driverId) {
+        this.fuelType = fuelType;
+        this.fuelPrice = fuelPrice;
+        this.fuelVolume = fuelVolume;
+        this.consumptionDate = consumptionDate;
+        this.driverId = driverId;
     }
 }

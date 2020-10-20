@@ -14,6 +14,7 @@ import java.time.LocalDate;
  * @author Vahap Gencdal
  * @email avahap19@gmail.com
  */
+
 @Getter
 @Setter
 @AllArgsConstructor

@@ -1,24 +1,21 @@
 package com.fuel.consumption;
 
-import com.fuel.consumption.api.dto.FuelConsumptionDto;
-import com.fuel.consumption.api.dto.TotalSpentAmountOfMoneyDto;
-import com.fuel.consumption.model.entity.FuelConsumption;
-import com.fuel.consumption.model.repository.FuelConsumptionRepository;
+import com.fuel.consumption.api.dto.FuelConsumptionPostRequest;
 import com.fuel.consumption.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Type;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * @author Vahap Gencdal
+ * @email avahap19@gmail.com
+ */
 
 @SpringBootTest
 @ActiveProfiles("logback-test")
@@ -28,8 +25,8 @@ public class JsonUtilTest {
 
     @Test
     public void read_successCase() throws IOException {
-        List<FuelConsumptionDto> fuelConsumptionDtoList= JsonUtil.getJsonListFromFile("file:src/test/resources/test-data/json_util_success_case.json");
-        Assertions.assertEquals(1,fuelConsumptionDtoList.size());
+        FuelConsumptionPostRequest fuelConsumptionDtoList= JsonUtil.getJsonObjectFromFile("file:src/test/resources/test-data/json_util_success_case.json");
+        Assertions.assertNotNull(fuelConsumptionDtoList);
     }
 
     @Test

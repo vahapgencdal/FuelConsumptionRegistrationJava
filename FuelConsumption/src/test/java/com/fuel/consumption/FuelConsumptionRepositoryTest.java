@@ -1,10 +1,9 @@
 package com.fuel.consumption;
 
-import com.fuel.consumption.api.dto.FuelConsumptionDto;
+import com.fuel.consumption.api.dto.FuelConsumptionPostRequest;
 import com.fuel.consumption.api.dto.TotalSpentAmountOfMoneyDto;
 import com.fuel.consumption.model.entity.FuelConsumption;
 import com.fuel.consumption.model.repository.FuelConsumptionRepository;
-import com.fuel.consumption.util.FuelType;
 import com.fuel.consumption.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -12,16 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
-import sun.jvm.hotspot.utilities.Assert;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+/**
+ * @author Vahap Gencdal
+ * @email avahap19@gmail.com
+ */
 
 @SpringBootTest
 @TestPropertySource(locations="classpath:test.properties")
@@ -33,8 +33,8 @@ public class FuelConsumptionRepositoryTest {
     private FuelConsumptionRepository fuelConsumptionRepository;
 
     public void beforeEach(String repositoryFunctionName) throws IOException {
-        List<FuelConsumptionDto> fuelConsumptionDtoList= JsonUtil.getJsonListFromFile("file:src/test/resources/test-data/"+repositoryFunctionName+".json");
-        List<FuelConsumption> fuelConsumptionList = fuelConsumptionDtoList.stream().map(FuelConsumptionDto::toEntity).collect(Collectors.toList());
+        List<FuelConsumptionPostRequest> fuelConsumptionDtoList= JsonUtil.getJsonListFromFile("file:src/test/resources/test-data/"+repositoryFunctionName+".json");
+        List<FuelConsumption> fuelConsumptionList = fuelConsumptionDtoList.stream().map(FuelConsumptionPostRequest::toEntity).collect(Collectors.toList());
         fuelConsumptionRepository.saveAll(fuelConsumptionList);
     }
 

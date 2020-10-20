@@ -1,0 +1,114 @@
+[
+  {
+    "fuelType": "P95",
+    "fuelPrice": 3.5,
+    "fuelVolume": 30,
+    "consumptionDate": "2020-01-12",
+    "driverId": 5
+  },
+  {
+    "fuelType": "P95",
+    "fuelPrice": 2.7,
+    "fuelVolume": 60,
+    "consumptionDate": "2020-01-15",
+    "driverId": 3
+  },
+  {
+    "fuelType": "P95",
+    "fuelPrice": 4,
+    "fuelVolume": 80,
+    "consumptionDate": "2020-01-16",
+    "driverId": 4
+  },
+  {
+    "fuelType": "P95",
+    "fuelPrice": 3,
+    "fuelVolume": 300,
+    "consumptionDate": "2020-01-17",
+    "driverId": 3
+  },
+  {
+    "fuelType": "P95",
+    "fuelPrice": 1.5,
+    "fuelVolume": 30,
+    "consumptionDate": "2020-02-11",
+    "driverId": 3
+  },
+  {
+    "fuelType": "P95",
+    "fuelPrice": 4,
+    "fuelVolume": 20,
+    "consumptionDate": "2020-02-13",
+    "driverId": 3
+  },
+  {
+    "fuelType": "P95",
+    "fuelPrice": 5,
+    "fuelVolume": 40,
+    "consumptionDate": "2020-02-14",
+    "driverId": 5
+  },
+  {
+    "fuelType": "DIESEL",
+    "fuelPrice": 1.5,
+    "fuelVolume": 10,
+    "consumptionDate": "2020-02-02",
+    "driverId": 11
+  },
+  {
+    "fuelType": "DIESEL",
+    "fuelPrice": 2,
+    "fuelVolume": 20,
+    "consumptionDate": "2020-02-03",
+    "driverId": 22
+  },
+  {
+    "fuelType": "DIESEL",
+    "fuelPrice": 2,
+    "fuelVolume": 40,
+    "consumptionDate": "2020-02-04",
+    "driverId": 32
+  },
+  {
+    "fuelType": "LPG",
+    "fuelPrice": 1.5,
+    "fuelVolume": 10,
+    "consumptionDate": "2020-02-05",
+    "driverId": 22
+  },
+  {
+    "fuelType": "LPG",
+    "fuelPrice": 1.5,
+    "fuelVolume": 30,
+    "consumptionDate": "2020-02-07",
+    "driverId": 3
+  },
+  {
+    "fuelType": "LPG",
+    "fuelPrice": 2.5,
+    "fuelVolume": 20,
+    "consumptionDate": "2020-02-09",
+    "driverId": 3
+  },
+  {
+    "fuelType": "LPG",
+    "fuelPrice": 1.5,
+    "fuelVolume": 10,
+    "consumptionDate": "2020-02-10",
+    "driverId": 7
+  },
+  {
+    "fuelType": "LPG",
+    "fuelPrice": 1.5,
+    "fuelVolume": 20,
+    "consumptionDate": "2020-03-06",
+    "driverId": 3
+  },
+  {
+    "fuelType": "LPG",
+    "fuelPrice": 3.5,
+    "fuelVolume": 40,
+    "consumptionDate": "2020-03-08",
+    "driverId": 6
+  }
+]

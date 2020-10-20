@@ -14,12 +14,17 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author Vahap Gencdal
+ * @email avahap19@gmail.com
+ */
+
 @Configuration
 @EnableSwagger2
 public class SpringFoxConfig {
 
     public static final Contact DEFAULT_CONTACT = new Contact(
-            "Abdulvahap Gencdal", "www.disdok.com", "abdulvahapgencdal@gmail.com");
+            "Abdulvahap Gencdal", "/info", "abdulvahapgencdal@gmail.com");
 
     public static final ApiInfo DEFAULT_API_INFO = new ApiInfo(
             "Fuel Consumption Registration API", "Fuel consumption management application API for small transportation company", "V1.0",

@@ -11,6 +11,11 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Vahap Gencdal
+ * @email avahap19@gmail.com
+ */
+
 @Configuration
 public class RestConfig {
 
