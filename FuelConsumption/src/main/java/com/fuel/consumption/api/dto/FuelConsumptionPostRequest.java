@@ -17,11 +17,8 @@ import java.time.LocalDate;
 
 @ApiModel(description="All details about the fuel consumption. ")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class FuelConsumptionPostRequest {
-
-    private Long id;
 
     @ApiModelProperty(notes="Fuel Type is mandatory attribute, have to be specified type, for take specified types use 'fuelTypes endpoint'")
     private String fuelType;
@@ -41,7 +38,6 @@ public class FuelConsumptionPostRequest {
 
     public static FuelConsumptionPostRequest toDto(FuelConsumption entity){
         FuelConsumptionPostRequest dto = new FuelConsumptionPostRequest();
-        dto.setId(entity.getId());
         dto.setFuelType(entity.getFuelType().name());
         dto.setFuelPrice(entity.getFuelPrice());
         dto.setFuelVolume(entity.getFuelVolume());
