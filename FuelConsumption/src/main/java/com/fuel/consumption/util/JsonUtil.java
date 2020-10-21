@@ -7,7 +7,6 @@ import com.fuel.consumption.api.dto.FuelConsumptionPostRequest;
 import com.fuel.consumption.api.dto.FuelConsumptionRecordSpecifiedByMonthDto;
 import com.fuel.consumption.api.dto.FuelConsumptionStatisticResponse;
 import com.fuel.consumption.api.dto.TotalSpentAmountOfMoneyResponse;
-import springfox.documentation.spring.web.json.Json;
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,7 +22,8 @@ public class JsonUtil {
     public static List<FuelConsumptionPostRequest> getJsonListFromFile(String path) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper.readValue(new URL(path), new TypeReference<List<FuelConsumptionPostRequest>>(){});
+        return objectMapper.readValue(new URL(path), new TypeReference<List<FuelConsumptionPostRequest>>() {
+        });
     }
 
     public static FuelConsumptionPostRequest getJsonObjectFromFile(String path) throws IOException {
@@ -32,8 +32,7 @@ public class JsonUtil {
         return objectMapper.readValue(new URL(path), FuelConsumptionPostRequest.class);
     }
 
-    public static String readFileAsString(String path)throws Exception
-    {
+    public static String readFileAsString(String path) throws Exception {
         return new String(Files.readAllBytes(Paths.get(path)));
     }
 
@@ -41,7 +40,8 @@ public class JsonUtil {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionPostRequest>>(){});
+        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionPostRequest>>() {
+        });
 
     }
 
@@ -49,7 +49,8 @@ public class JsonUtil {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper.readValue(content, new TypeReference<List<TotalSpentAmountOfMoneyResponse>>(){});
+        return objectMapper.readValue(content, new TypeReference<List<TotalSpentAmountOfMoneyResponse>>() {
+        });
 
     }
 
@@ -57,7 +58,8 @@ public class JsonUtil {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionRecordSpecifiedByMonthDto>>(){});
+        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionRecordSpecifiedByMonthDto>>() {
+        });
 
     }
 
@@ -65,10 +67,10 @@ public class JsonUtil {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionStatisticResponse>>(){});
+        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionStatisticResponse>>() {
+        });
 
     }
-
 
 
 }

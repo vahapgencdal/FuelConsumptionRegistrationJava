@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -33,7 +32,6 @@ import static org.mockito.Mockito.when;
  */
 
 @SpringBootTest
-@TestPropertySource(locations = "classpath:test.properties")
 @ActiveProfiles("logback-test")
 @Slf4j
 class FuelConsumptionServiceTest {

@@ -1,7 +1,6 @@
 package com.fuel.consumption.model.entity;
 
 import com.fuel.consumption.util.FuelType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

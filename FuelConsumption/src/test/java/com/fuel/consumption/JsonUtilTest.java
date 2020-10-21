@@ -7,10 +7,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author Vahap Gencdal
@@ -19,18 +17,17 @@ import java.util.List;
 
 @SpringBootTest
 @ActiveProfiles("logback-test")
-@TestPropertySource(locations="classpath:test.properties")
 @Slf4j
 public class JsonUtilTest {
 
     @Test
     public void read_successCase() throws IOException {
-        FuelConsumptionPostRequest fuelConsumptionDtoList= JsonUtil.getJsonObjectFromFile("file:src/test/resources/test-data/json_util_success_case.json");
+        FuelConsumptionPostRequest fuelConsumptionDtoList = JsonUtil.getJsonObjectFromFile("file:src/test/resources/test-data/json_util_success_case.json");
         Assertions.assertNotNull(fuelConsumptionDtoList);
     }
 
     @Test
-    public void unrecognizedPropertyExceptionCase(){
+    public void unrecognizedPropertyExceptionCase() {
         Assertions.assertThrows(com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException.class, () -> {
             JsonUtil.getJsonListFromFile("file:src/test/resources/test-data/json_util_wrong_case.json");
         });
