@@ -4,9 +4,7 @@ import com.fuel.consumption.api.dto.*;
 import com.fuel.consumption.model.entity.FuelConsumption;
 import com.fuel.consumption.model.repository.FuelConsumptionRepository;
 import com.fuel.consumption.model.service.FuelConsumptionService;
-import com.fuel.consumption.util.BigDecimalUtil;
 import com.fuel.consumption.util.FuelType;
-import com.fuel.consumption.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,10 +18,9 @@ import org.springframework.test.context.TestPropertySource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -80,18 +77,15 @@ class FuelConsumptionServiceTest {
     }
 
     @Test
-    void findTotalSpentAmountOfMoneyGroupedByMonth_success_case() throws IOException {
+    void findTotalSpentAmountOfMoneyGroupedByMonth_success_case() {
 
-        List<FuelConsumptionPostRequest> fuelConsumptionDtoList = JsonUtil.getJsonListFromFile("file:src/test/resources/test-data/findAllTotalSpentAmountOfMoneyServiceTest.json");
+        List<TotalSpentAmountOfMoneyDto> totalSpentAmountOfMoneyDtoList = new ArrayList<>();
 
-        List<TotalSpentAmountOfMoneyDto> totalSpentAmountOfMoneyDtoList = fuelConsumptionDtoList
-                .stream()
-                .map(consumption -> new TotalSpentAmountOfMoneyDto(consumption.getConsumptionDate().getMonth().getValue(),
-                        consumption.getFuelPrice(),
-                        consumption.getFuelVolume())).collect(Collectors.toList());
+        totalSpentAmountOfMoneyDtoList.add(new TotalSpentAmountOfMoneyDto(10, new BigDecimal("1.12"), new BigDecimal("10.3"), 0L));
+        totalSpentAmountOfMoneyDtoList.add(new TotalSpentAmountOfMoneyDto(10, new BigDecimal("1.15"), new BigDecimal("10.6"), 0L));
 
-
-        List<TotalSpentAmountOfMoneyResponse> expectedResult = getTotalSpentAmountOfMoneyResponseList(totalSpentAmountOfMoneyDtoList);
+        List<TotalSpentAmountOfMoneyResponse> expectedResult = new ArrayList<>();
+        expectedResult.add(new TotalSpentAmountOfMoneyResponse(Month.OCTOBER.name(), new BigDecimal("23.7260")));
 
         when(fuelConsumptionRepository.findAllTotalSpentAmountOfMoney()).thenReturn(totalSpentAmountOfMoneyDtoList);
 
@@ -104,22 +98,18 @@ class FuelConsumptionServiceTest {
     }
 
     @Test
-    void findTotalSpentAmountOfMoneyByDriverIdAndGroupedByMonth_success_case() throws IOException {
+    void findTotalSpentAmountOfMoneyByDriverIdAndGroupedByMonth_success_case() {
 
         long driverId = 123L;
-        List<FuelConsumptionPostRequest> fuelConsumptionDtoList = JsonUtil.getJsonListFromFile("file:src/test/resources/test-data/findAllTotalSpentAmountOfMoneyByDriverIdServiceTest.json");
+        List<TotalSpentAmountOfMoneyDto> totalSpentAmountOfMoneyDtoList = new ArrayList<>();
 
-        List<TotalSpentAmountOfMoneyDto> totalSpentAmountOfMoneyDtoList = fuelConsumptionDtoList
-                .stream()
-                .filter(fuelConsumptionDto -> driverId == fuelConsumptionDto.getDriverId())
-                .map(consumption -> new TotalSpentAmountOfMoneyDto(consumption.getConsumptionDate().getMonth().getValue(),
-                        consumption.getFuelPrice(),
-                        consumption.getFuelVolume())).collect(Collectors.toList());
+        totalSpentAmountOfMoneyDtoList.add(new TotalSpentAmountOfMoneyDto(10, new BigDecimal("1.12"), new BigDecimal("10.3"), driverId));
+        totalSpentAmountOfMoneyDtoList.add(new TotalSpentAmountOfMoneyDto(10, new BigDecimal("1.15"), new BigDecimal("10.6"), driverId));
 
+        List<TotalSpentAmountOfMoneyResponse> expectedResult = new ArrayList<>();
+        expectedResult.add(new TotalSpentAmountOfMoneyResponse(Month.OCTOBER.name(), new BigDecimal("23.7260")));
 
-        List<TotalSpentAmountOfMoneyResponse> expectedResult = getTotalSpentAmountOfMoneyResponseList(totalSpentAmountOfMoneyDtoList);
-
-        when(fuelConsumptionRepository.findAllTotalSpentAmountOfMoneyByDriverId(driverId)).thenReturn(totalSpentAmountOfMoneyDtoList);
+        when(fuelConsumptionRepository.findAllTotalSpentAmountOfMoneyByDriverId(anyLong())).thenReturn(totalSpentAmountOfMoneyDtoList);
 
         List<TotalSpentAmountOfMoneyResponse> actualResult = fuelConsumptionService.findTotalSpentAmountOfMoneyByDriverIdAndGroupedByMonth(driverId);
 
@@ -128,72 +118,49 @@ class FuelConsumptionServiceTest {
         Assertions.assertEquals(expectedResult.get(0).getTotalAmount(), actualResult.get(0).getTotalAmount());
     }
 
-    private List<TotalSpentAmountOfMoneyResponse> getTotalSpentAmountOfMoneyResponseList(List<TotalSpentAmountOfMoneyDto> totalSpentAmountOfMoneyDtoList) {
-        return totalSpentAmountOfMoneyDtoList
-                .stream()
-                .collect(Collectors.groupingBy(TotalSpentAmountOfMoneyDto::getMonth))
-                .entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> e.getValue()
-                                .stream()
-                                .map(x -> x.getFuelPrice().multiply(x.getFuelVolume()))
-                                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                                .setScale(BigDecimalUtil.SCALE, BigDecimalUtil.ROUNDING_MODE)
-                        )
-                )
-                .entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .map(TotalSpentAmountOfMoneyResponse::toResponse).collect(Collectors.toList());
-    }
-
-
     @Test
-    void findFuelConsumptionRecordsByMonth_success_case() throws IOException {
+    void findFuelConsumptionRecordsByMonth_success_case() {
         int monthId = 3;
-        List<FuelConsumptionPostRequest> fuelConsumptionDtoList = JsonUtil.getJsonListFromFile("file:src/test/resources/test-data/general_test_data.json");
-        List<FuelConsumption> fuelConsumptionList = fuelConsumptionDtoList
-                .stream()
-                .filter(fuelConsumption -> fuelConsumption.getConsumptionDate().getMonth().getValue() == monthId)
-                .map(FuelConsumptionPostRequest::toEntity)
-                .collect(Collectors.toList());
+
+        List<FuelConsumption> fuelConsumptionList = new ArrayList<>();
+        fuelConsumptionList.add(new FuelConsumption(FuelType.LPG, new BigDecimal("1.5"), new BigDecimal("20"), LocalDate.parse("2020-03-06"), 3L));
+        fuelConsumptionList.add(new FuelConsumption(FuelType.LPG, new BigDecimal("3.5"), new BigDecimal("40"), LocalDate.parse("2020-03-08"), 6L));
 
         when(fuelConsumptionRepository.findAll((Specification<FuelConsumption>) any())).thenReturn(fuelConsumptionList);
 
-        List<FuelConsumptionRecordSpecifiedByMonthDto> expectedResult = fuelConsumptionService.findFuelConsumptionRecordsByMonth(monthId);
+        List<FuelConsumptionRecordSpecifiedByMonthDto> expectedResult = new ArrayList<>();
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("1.5"), new BigDecimal("30.0000"), LocalDate.parse("2020-03-06"), 3L));
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.LPG.name(), new BigDecimal("40"), new BigDecimal("3.5"), new BigDecimal("140.0000"), LocalDate.parse("2020-03-08"), 6L));
 
-        List<FuelConsumptionRecordSpecifiedByMonthDto> actualResult = getGroupOfFullConsumptionList(fuelConsumptionList);
+        List<FuelConsumptionRecordSpecifiedByMonthDto> actualResult = fuelConsumptionService.findFuelConsumptionRecordsByMonth(monthId);
 
         Assertions.assertEquals(expectedResult.size(), actualResult.size());
         Assertions.assertEquals(expectedResult.get(0).getTotalPrice(), actualResult.get(0).getTotalPrice());
         Assertions.assertEquals(expectedResult.get(1).getTotalPrice(), actualResult.get(1).getTotalPrice());
     }
 
-
-    private List<FuelConsumptionRecordSpecifiedByMonthDto> getGroupOfFullConsumptionList(List<FuelConsumption> fuelConsumptionList) {
-        return fuelConsumptionList.stream()
-                .map(FuelConsumptionRecordSpecifiedByMonthDto::toDto)
-                .sorted(Comparator.comparing(FuelConsumptionRecordSpecifiedByMonthDto::getConsumptionDate))
-                .collect(Collectors.toList());
-    }
-
     @Test
-    void findFuelConsumptionRecordsByMonthAndDriverId_success_case() throws IOException {
+    void findFuelConsumptionRecordsByMonthAndDriverId_success_case() {
         int monthId = 2;
         long driverId = 3;
-        List<FuelConsumptionPostRequest> fuelConsumptionDtoList = JsonUtil.getJsonListFromFile("file:src/test/resources/test-data/general_test_data.json");
-        List<FuelConsumption> fuelConsumptionList = fuelConsumptionDtoList
-                .stream()
-                .filter(fuelConsumption -> fuelConsumption.getConsumptionDate().getMonth().getValue() == monthId)
-                .filter(fuelConsumption -> fuelConsumption.getDriverId() == driverId)
-                .map(FuelConsumptionPostRequest::toEntity)
-                .collect(Collectors.toList());
+
+        List<FuelConsumption> fuelConsumptionList = new ArrayList<>();
+        fuelConsumptionList.add(new FuelConsumption(FuelType.P95, new BigDecimal("1.5"), new BigDecimal("30"), LocalDate.parse("2020-02-11"), 3L));
+        fuelConsumptionList.add(new FuelConsumption(FuelType.P95, new BigDecimal("4"), new BigDecimal("20"), LocalDate.parse("2020-02-13"), 3L));
+        fuelConsumptionList.add(new FuelConsumption(FuelType.LPG, new BigDecimal("1.5"), new BigDecimal("30"), LocalDate.parse("2020-02-07"), 3L));
+        fuelConsumptionList.add(new FuelConsumption(FuelType.LPG, new BigDecimal("2.5"), new BigDecimal("20"), LocalDate.parse("2020-02-09"), 3L));
+
 
         when(fuelConsumptionRepository.findAll((Specification<FuelConsumption>) any())).thenReturn(fuelConsumptionList);
 
-        List<FuelConsumptionRecordSpecifiedByMonthDto> expectedResult = fuelConsumptionService.findFuelConsumptionRecordsByMonthAndDriverId(monthId, driverId);
+        List<FuelConsumptionRecordSpecifiedByMonthDto> expectedResult = new ArrayList<>();
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.LPG.name(), new BigDecimal("30"), new BigDecimal("1.5"), new BigDecimal("45.0000"), LocalDate.parse("2020-03-07"), 3L));
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("2.5"), new BigDecimal("50.0000"), LocalDate.parse("2020-03-09"), 3L));
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.P95.name(), new BigDecimal("30"), new BigDecimal("1.5"), new BigDecimal("45.0000"), LocalDate.parse("2020-03-11"), 3L));
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.P95.name(), new BigDecimal("20"), new BigDecimal("4"), new BigDecimal("80.0000"), LocalDate.parse("2020-03-13"), 3L));
 
-        List<FuelConsumptionRecordSpecifiedByMonthDto> actualResult = getGroupOfFullConsumptionList(fuelConsumptionList);
+
+        List<FuelConsumptionRecordSpecifiedByMonthDto> actualResult = fuelConsumptionService.findFuelConsumptionRecordsByMonthAndDriverId(monthId, driverId);
 
         Assertions.assertEquals(expectedResult.size(), actualResult.size());
         Assertions.assertEquals(expectedResult.get(0).getTotalPrice(), actualResult.get(0).getTotalPrice());
@@ -204,54 +171,54 @@ class FuelConsumptionServiceTest {
     @Test
     void findEachMonthFuelConsumptionStatisticsGroupedByFuelType_success_case() throws IOException {
 
-        List<FuelConsumptionPostRequest> fuelConsumptionDtoList = JsonUtil.getJsonListFromFile("file:src/test/resources/test-data/general_test_data.json");
-        List<FuelConsumption> fuelConsumptionList = fuelConsumptionDtoList
-                .stream()
-                .map(FuelConsumptionPostRequest::toEntity)
-                .collect(Collectors.toList());
+        List<FuelConsumption> fuelConsumptionList = new ArrayList<>();
+        fuelConsumptionList.add(new FuelConsumption(FuelType.P95, new BigDecimal("3.5"), new BigDecimal("30"), LocalDate.parse("2020-01-12"), 5L));
+        fuelConsumptionList.add(new FuelConsumption(FuelType.P95, new BigDecimal("2.7"), new BigDecimal("60"), LocalDate.parse("2020-01-15"), 3L));
+        fuelConsumptionList.add(new FuelConsumption(FuelType.P95, new BigDecimal("4"), new BigDecimal("80"), LocalDate.parse("2020-01-16"), 4L));
+        fuelConsumptionList.add(new FuelConsumption(FuelType.P95, new BigDecimal("3"), new BigDecimal("300"), LocalDate.parse("2020-01-17"), 3L));
+
 
         when(fuelConsumptionRepository.findAll()).thenReturn(fuelConsumptionList);
 
-        List<FuelConsumptionStatisticResponse> er = fuelConsumptionService.findEachMonthFuelConsumptionStatisticsGroupedByFuelType();
+        List<FuelConsumptionStatisticResponse> er = new ArrayList<>();
+        List<FuelConsumptionStatisticFuelTypeResponse> fuelTypeResponseList = new ArrayList<>();
+        fuelTypeResponseList.add(new FuelConsumptionStatisticFuelTypeResponse(FuelType.P95.name(), new BigDecimal("470.0000"), new BigDecimal("3.1639"), new BigDecimal("1487.0000")));
+        er.add(new FuelConsumptionStatisticResponse(Month.JANUARY.name(), fuelTypeResponseList));
 
-        List<FuelConsumptionStatisticResponse> ar = getStatisticOfFuelConsumptionListByFuelTypeAndMonth(fuelConsumptionList);
+
+        List<FuelConsumptionStatisticResponse> ar = fuelConsumptionService.findEachMonthFuelConsumptionStatisticsGroupedByFuelType();
 
         Assertions.assertEquals(er.size(), ar.size());
         Assertions.assertEquals(er.get(0).getMonth(), ar.get(0).getMonth());
         Assertions.assertEquals(er.get(0).getFuelTypeStatistics().size(), ar.get(0).getFuelTypeStatistics().size());
         Assertions.assertEquals(er.get(0).getFuelTypeStatistics().get(0).getAveragePrice(), ar.get(0).getFuelTypeStatistics().get(0).getAveragePrice());
         Assertions.assertEquals(er.get(0).getFuelTypeStatistics().get(0).getTotalPrice(), ar.get(0).getFuelTypeStatistics().get(0).getTotalPrice());
-
-        Assertions.assertEquals(er.size(), ar.size());
-        Assertions.assertEquals(er.get(1).getMonth(), ar.get(1).getMonth());
-        Assertions.assertEquals(er.get(1).getFuelTypeStatistics().size(), ar.get(1).getFuelTypeStatistics().size());
-        Assertions.assertEquals(er.get(1).getFuelTypeStatistics().get(0).getAveragePrice(), ar.get(1).getFuelTypeStatistics().get(0).getAveragePrice());
-        Assertions.assertEquals(er.get(1).getFuelTypeStatistics().get(0).getTotalPrice(), ar.get(1).getFuelTypeStatistics().get(0).getTotalPrice());
-
-        Assertions.assertEquals(er.size(), ar.size());
-        Assertions.assertEquals(er.get(2).getMonth(), ar.get(2).getMonth());
-        Assertions.assertEquals(er.get(2).getFuelTypeStatistics().size(), ar.get(2).getFuelTypeStatistics().size());
-        Assertions.assertEquals(er.get(2).getFuelTypeStatistics().get(0).getAveragePrice(), ar.get(2).getFuelTypeStatistics().get(0).getAveragePrice());
-        Assertions.assertEquals(er.get(2).getFuelTypeStatistics().get(0).getTotalPrice(), ar.get(2).getFuelTypeStatistics().get(0).getTotalPrice());
-
 
     }
 
     @Test
     void findEachMonthFuelConsumptionStatisticsByDriverIdAndGroupedByFuelType_success_case() throws IOException {
         long driverId = 3;
-        List<FuelConsumptionPostRequest> fuelConsumptionDtoList = JsonUtil.getJsonListFromFile("file:src/test/resources/test-data/general_test_data.json");
-        List<FuelConsumption> fuelConsumptionList = fuelConsumptionDtoList
-                .stream()
-                .filter(fuelConsumption -> fuelConsumption.getDriverId() == driverId)
-                .map(FuelConsumptionPostRequest::toEntity)
-                .collect(Collectors.toList());
+        List<FuelConsumption> fuelConsumptionList = new ArrayList<>();
+        fuelConsumptionList.add(new FuelConsumption(FuelType.P95, new BigDecimal("3.5"), new BigDecimal("30"), LocalDate.parse("2020-01-12"), 5L));
+        fuelConsumptionList.add(new FuelConsumption(FuelType.P95, new BigDecimal("2.7"), new BigDecimal("60"), LocalDate.parse("2020-01-15"), 3L));
+        fuelConsumptionList.add(new FuelConsumption(FuelType.P95, new BigDecimal("4"), new BigDecimal("80"), LocalDate.parse("2020-01-16"), 4L));
+        fuelConsumptionList.add(new FuelConsumption(FuelType.P95, new BigDecimal("3"), new BigDecimal("300"), LocalDate.parse("2020-01-17"), 3L));
+        fuelConsumptionList.add(new FuelConsumption(FuelType.LPG, new BigDecimal("1.5"), new BigDecimal("20"), LocalDate.parse("2020-03-06"), 3L));
+        fuelConsumptionList.add(new FuelConsumption(FuelType.LPG, new BigDecimal("3.5"), new BigDecimal("40"), LocalDate.parse("2020-03-08"), 6L));
 
         when(fuelConsumptionRepository.findByDriverId(anyLong())).thenReturn(fuelConsumptionList);
 
-        List<FuelConsumptionStatisticResponse> er = fuelConsumptionService.findEachMonthFuelConsumptionStatisticsByDriverIdAndGroupedByFuelType(driverId);
+        List<FuelConsumptionStatisticResponse> er = new ArrayList<>();
+        List<FuelConsumptionStatisticFuelTypeResponse> fuelTypeJanResponseList = new ArrayList<>();
+        List<FuelConsumptionStatisticFuelTypeResponse> fuelTypeMarchResponseList = new ArrayList<>();
+        fuelTypeJanResponseList.add(new FuelConsumptionStatisticFuelTypeResponse(FuelType.P95.name(), new BigDecimal("470.0000"), new BigDecimal("3.1639"), new BigDecimal("1487.0000")));
+        fuelTypeMarchResponseList.add(new FuelConsumptionStatisticFuelTypeResponse(FuelType.LPG.name(), new BigDecimal("6.0000"), new BigDecimal("2.8334"), new BigDecimal("170.0000")));
+        er.add(new FuelConsumptionStatisticResponse(Month.JANUARY.name(), fuelTypeJanResponseList));
+        er.add(new FuelConsumptionStatisticResponse(Month.MARCH.name(), fuelTypeMarchResponseList));
 
-        List<FuelConsumptionStatisticResponse> ar = getStatisticOfFuelConsumptionListByFuelTypeAndMonth(fuelConsumptionList);
+
+        List<FuelConsumptionStatisticResponse> ar = fuelConsumptionService.findEachMonthFuelConsumptionStatisticsByDriverIdAndGroupedByFuelType(driverId);
 
         Assertions.assertEquals(er.size(), ar.size());
         Assertions.assertEquals(er.get(0).getMonth(), ar.get(0).getMonth());
@@ -265,28 +232,5 @@ class FuelConsumptionServiceTest {
         Assertions.assertEquals(er.get(1).getFuelTypeStatistics().get(0).getAveragePrice(), ar.get(1).getFuelTypeStatistics().get(0).getAveragePrice());
         Assertions.assertEquals(er.get(1).getFuelTypeStatistics().get(0).getTotalPrice(), ar.get(1).getFuelTypeStatistics().get(0).getTotalPrice());
 
-        Assertions.assertEquals(er.size(), ar.size());
-        Assertions.assertEquals(er.get(2).getMonth(), ar.get(2).getMonth());
-        Assertions.assertEquals(er.get(2).getFuelTypeStatistics().size(), ar.get(2).getFuelTypeStatistics().size());
-        Assertions.assertEquals(er.get(2).getFuelTypeStatistics().get(0).getAveragePrice(), ar.get(2).getFuelTypeStatistics().get(0).getAveragePrice());
-        Assertions.assertEquals(er.get(2).getFuelTypeStatistics().get(0).getTotalPrice(), ar.get(2).getFuelTypeStatistics().get(0).getTotalPrice());
-
     }
-
-    private List<FuelConsumptionStatisticResponse> getStatisticOfFuelConsumptionListByFuelTypeAndMonth(List<FuelConsumption> fuelConsumptions) {
-        return fuelConsumptions.stream()
-                .collect(Collectors.groupingBy(fuelConsumption -> fuelConsumption.getConsumptionDate().getMonth().getValue()))
-                .entrySet().stream()
-                .map(integerListEntry -> {
-                    List<FuelConsumptionStatisticFuelTypeResponse> fuelTypeConsumptions = integerListEntry.getValue()
-                            .stream()
-                            .collect(Collectors.groupingBy(FuelConsumption::getFuelType))
-                            .entrySet().stream()
-                            .map(FuelConsumptionStatisticFuelTypeResponse::toResponse)
-                            .collect(Collectors.toList());
-
-                    return FuelConsumptionStatisticResponse.toResponse(integerListEntry.getKey(), fuelTypeConsumptions);
-                }).collect(Collectors.toList());
-    }
-
 }

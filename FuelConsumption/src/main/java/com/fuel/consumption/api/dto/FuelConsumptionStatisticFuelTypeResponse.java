@@ -5,7 +5,9 @@ import com.fuel.consumption.util.BigDecimalUtil;
 import com.fuel.consumption.util.FuelType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,6 +20,8 @@ import java.util.Map;
 
 @Data
 @ApiModel(description="This response created after Fuel Type mapping")
+@AllArgsConstructor
+@NoArgsConstructor
 public class FuelConsumptionStatisticFuelTypeResponse {
 
     @ApiModelProperty(notes="Fuel type information added to records")

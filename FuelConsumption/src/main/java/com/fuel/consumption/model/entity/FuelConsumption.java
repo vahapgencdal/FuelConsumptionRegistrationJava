@@ -17,7 +17,6 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "FUEL_CONSUMPTION")
@@ -39,4 +38,11 @@ public class FuelConsumption extends BaseEntity {
     @Column(name = "DRIVER_ID", nullable = false)
     private Long driverId;
 
+    public FuelConsumption(FuelType fuelType, BigDecimal fuelPrice, BigDecimal fuelVolume, LocalDate consumptionDate, Long driverId) {
+        this.fuelType = fuelType;
+        this.fuelPrice = fuelPrice;
+        this.fuelVolume = fuelVolume;
+        this.consumptionDate = consumptionDate;
+        this.driverId = driverId;
+    }
 }
