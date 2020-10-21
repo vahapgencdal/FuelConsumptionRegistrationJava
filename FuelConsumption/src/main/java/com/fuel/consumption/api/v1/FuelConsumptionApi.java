@@ -93,8 +93,7 @@ public class FuelConsumptionApi {
     @RequestMapping(value = "/fuel/consumptions/months/{monthId}/{driverId}",method = RequestMethod.GET)
     @ApiOperation(value = "Retrieve List Fuel consumption records for specified month and driverId",
             notes = "Retrieve list fuel consumption records for specified month and driverId (each row should contain: fuel type, volume, date, price, total price, driver ID)")
-    public ResponseEntity<List<FuelConsumptionRecordSpecifiedByMonthDto>> findFuelConsumptionRecordsByMonthAndDriverId(@PathVariable long driverId,
-                                                                                                 @RequestParam(value = "monthId") int monthId) {
+    public ResponseEntity<List<FuelConsumptionRecordSpecifiedByMonthDto>> findFuelConsumptionRecordsByMonthAndDriverId(@PathVariable int monthId, @PathVariable long driverId) {
         return ResponseEntity.ok(fuelConsumptionService.findFuelConsumptionRecordsByMonthAndDriverId(monthId,driverId));
     }
     @RequestMapping(value = "/fuel/consumptions/statistics",method = RequestMethod.GET)

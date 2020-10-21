@@ -2,7 +2,9 @@ package com.fuel.consumption.api.dto;
 
 import com.fuel.consumption.model.entity.FuelConsumption;
 import com.fuel.consumption.util.BigDecimalUtil;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,6 +15,8 @@ import java.time.LocalDate;
  */
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class FuelConsumptionRecordSpecifiedByMonthDto {
 
       private String fuelType;

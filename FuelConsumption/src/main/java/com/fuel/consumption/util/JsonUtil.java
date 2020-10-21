@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fuel.consumption.api.dto.FuelConsumptionPostRequest;
+import com.fuel.consumption.api.dto.FuelConsumptionRecordSpecifiedByMonthDto;
+import com.fuel.consumption.api.dto.FuelConsumptionStatisticResponse;
+import com.fuel.consumption.api.dto.TotalSpentAmountOfMoneyResponse;
 import springfox.documentation.spring.web.json.Json;
 
 import java.io.IOException;
@@ -41,5 +44,31 @@ public class JsonUtil {
         return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionPostRequest>>(){});
 
     }
+
+    public static List<TotalSpentAmountOfMoneyResponse> getTotalSpentAmountOfMoneyResponsesString(String content) throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper.readValue(content, new TypeReference<List<TotalSpentAmountOfMoneyResponse>>(){});
+
+    }
+
+    public static List<FuelConsumptionRecordSpecifiedByMonthDto> getFuelConsumptionRecordSpecifiedByMonthsFromString(String content) throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionRecordSpecifiedByMonthDto>>(){});
+
+    }
+
+    public static List<FuelConsumptionStatisticResponse> getFuelConsumptionStatisticResponsesFromString(String content) throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionStatisticResponse>>(){});
+
+    }
+
+
 
 }
