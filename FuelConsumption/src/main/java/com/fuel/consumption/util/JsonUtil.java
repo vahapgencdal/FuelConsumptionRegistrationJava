@@ -32,7 +32,7 @@ public class JsonUtil {
         return objectMapper.readValue(new URL(path), FuelConsumptionPostRequest.class);
     }
 
-    public static String readFileAsString(String path) throws Exception {
+    public static String readFileAsString(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)));
     }
 
