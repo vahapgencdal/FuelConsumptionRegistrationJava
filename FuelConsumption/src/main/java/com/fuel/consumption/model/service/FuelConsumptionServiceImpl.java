@@ -73,7 +73,7 @@ public class FuelConsumptionServiceImpl implements FuelConsumptionService {
     }
 
     @Override
-    public List<FuelConsumptionRecordSpecifiedByMonthDto> findFuelConsumptionRecordsByMonth(int month)  {
+    public List<FuelConsumptionRecordSpecifiedByMonthResponse> findFuelConsumptionRecordsByMonth(int month)  {
         List<FuelConsumption> fuelConsumptionList =
                 fuelConsumptionRepository.findAll(
                         (Specification<FuelConsumption>) (root, query, cb) -> {
@@ -89,7 +89,7 @@ public class FuelConsumptionServiceImpl implements FuelConsumptionService {
     }
 
     @Override
-    public List<FuelConsumptionRecordSpecifiedByMonthDto> findFuelConsumptionRecordsByMonthAndDriverId(int month, long driverId) {
+    public List<FuelConsumptionRecordSpecifiedByMonthResponse> findFuelConsumptionRecordsByMonthAndDriverId(int month, long driverId) {
         List<FuelConsumption> fuelConsumptionList =
                 fuelConsumptionRepository.findAll(
                         (Specification<FuelConsumption>) (root, query, cb) -> {
@@ -106,10 +106,10 @@ public class FuelConsumptionServiceImpl implements FuelConsumptionService {
         return getGroupOfFullConsumptionList(fuelConsumptionList);
     }
 
-    private List<FuelConsumptionRecordSpecifiedByMonthDto> getGroupOfFullConsumptionList(List<FuelConsumption> fuelConsumptionList){
+    private List<FuelConsumptionRecordSpecifiedByMonthResponse> getGroupOfFullConsumptionList(List<FuelConsumption> fuelConsumptionList){
         return fuelConsumptionList.stream()
-                .map(FuelConsumptionRecordSpecifiedByMonthDto::toDto)
-                .sorted(Comparator.comparing(FuelConsumptionRecordSpecifiedByMonthDto::getConsumptionDate))
+                .map(FuelConsumptionRecordSpecifiedByMonthResponse::toDto)
+                .sorted(Comparator.comparing(FuelConsumptionRecordSpecifiedByMonthResponse::getConsumptionDate))
                 .collect(Collectors.toList());
     }
 

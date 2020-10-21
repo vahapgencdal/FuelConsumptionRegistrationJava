@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fuel.consumption.api.dto.FuelConsumptionPostRequest;
-import com.fuel.consumption.api.dto.FuelConsumptionRecordSpecifiedByMonthDto;
+import com.fuel.consumption.api.dto.FuelConsumptionRecordSpecifiedByMonthResponse;
 import com.fuel.consumption.api.dto.FuelConsumptionStatisticResponse;
 import com.fuel.consumption.api.dto.TotalSpentAmountOfMoneyResponse;
 
@@ -54,11 +54,11 @@ public class JsonUtil {
 
     }
 
-    public static List<FuelConsumptionRecordSpecifiedByMonthDto> getFuelConsumptionRecordSpecifiedByMonthsFromString(String content) throws IOException {
+    public static List<FuelConsumptionRecordSpecifiedByMonthResponse> getFuelConsumptionRecordSpecifiedByMonthsFromString(String content) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionRecordSpecifiedByMonthDto>>() {
+        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionRecordSpecifiedByMonthResponse>>() {
         });
 
     }

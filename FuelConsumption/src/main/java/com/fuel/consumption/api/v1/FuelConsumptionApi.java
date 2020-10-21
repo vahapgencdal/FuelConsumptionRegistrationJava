@@ -1,7 +1,6 @@
 package com.fuel.consumption.api.v1;
 
 import com.fuel.consumption.api.dto.*;
-import com.fuel.consumption.model.entity.FuelConsumption;
 import com.fuel.consumption.model.service.FuelConsumptionService;
 import com.fuel.consumption.util.JsonUtil;
 import io.swagger.annotations.Api;
@@ -10,13 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -92,7 +89,7 @@ public class FuelConsumptionApi {
     @RequestMapping(value = "/fuel/consumptions/months/{monthId}",method = RequestMethod.GET)
     @ApiOperation(value = "Retrieve list of fuel consumption records for specified month",
             notes = "Retrieve list of fuel consumption records for specified month (each row should contain: fuel type, volume, date, price, total price, driver ID)")
-    public ResponseEntity<List<FuelConsumptionRecordSpecifiedByMonthDto>> findFuelConsumptionRecordsByMonth(@PathVariable int monthId) {
+    public ResponseEntity<List<FuelConsumptionRecordSpecifiedByMonthResponse>> findFuelConsumptionRecordsByMonth(@PathVariable int monthId) {
         //TODO:if there is no record no record error should return
         //TODO:validation of monthId
         return ResponseEntity.ok(fuelConsumptionService.findFuelConsumptionRecordsByMonth(monthId));
@@ -101,7 +98,7 @@ public class FuelConsumptionApi {
     @RequestMapping(value = "/fuel/consumptions/months/{monthId}/{driverId}",method = RequestMethod.GET)
     @ApiOperation(value = "Retrieve List Fuel consumption records for specified month and driverId",
             notes = "Retrieve list fuel consumption records for specified month and driverId (each row should contain: fuel type, volume, date, price, total price, driver ID)")
-    public ResponseEntity<List<FuelConsumptionRecordSpecifiedByMonthDto>> findFuelConsumptionRecordsByMonthAndDriverId(@PathVariable int monthId, @PathVariable long driverId) {
+    public ResponseEntity<List<FuelConsumptionRecordSpecifiedByMonthResponse>> findFuelConsumptionRecordsByMonthAndDriverId(@PathVariable int monthId, @PathVariable long driverId) {
         //TODO:validation of monthId
         //TODO:if there is no record no record error should return
         return ResponseEntity.ok(fuelConsumptionService.findFuelConsumptionRecordsByMonthAndDriverId(monthId,driverId));

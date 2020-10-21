@@ -126,11 +126,11 @@ class FuelConsumptionServiceTest {
 
         when(fuelConsumptionRepository.findAll((Specification<FuelConsumption>) any())).thenReturn(fuelConsumptionList);
 
-        List<FuelConsumptionRecordSpecifiedByMonthDto> expectedResult = new ArrayList<>();
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("1.5"), new BigDecimal("30.0000"), LocalDate.parse("2020-03-06"), 3L));
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.LPG.name(), new BigDecimal("40"), new BigDecimal("3.5"), new BigDecimal("140.0000"), LocalDate.parse("2020-03-08"), 6L));
+        List<FuelConsumptionRecordSpecifiedByMonthResponse> expectedResult = new ArrayList<>();
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("1.5"), new BigDecimal("30.0000"), LocalDate.parse("2020-03-06"), 3L));
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.LPG.name(), new BigDecimal("40"), new BigDecimal("3.5"), new BigDecimal("140.0000"), LocalDate.parse("2020-03-08"), 6L));
 
-        List<FuelConsumptionRecordSpecifiedByMonthDto> actualResult = fuelConsumptionService.findFuelConsumptionRecordsByMonth(monthId);
+        List<FuelConsumptionRecordSpecifiedByMonthResponse> actualResult = fuelConsumptionService.findFuelConsumptionRecordsByMonth(monthId);
 
         Assertions.assertEquals(expectedResult.size(), actualResult.size());
         Assertions.assertEquals(expectedResult.get(0).getTotalPrice(), actualResult.get(0).getTotalPrice());
@@ -151,14 +151,14 @@ class FuelConsumptionServiceTest {
 
         when(fuelConsumptionRepository.findAll((Specification<FuelConsumption>) any())).thenReturn(fuelConsumptionList);
 
-        List<FuelConsumptionRecordSpecifiedByMonthDto> expectedResult = new ArrayList<>();
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.LPG.name(), new BigDecimal("30"), new BigDecimal("1.5"), new BigDecimal("45.0000"), LocalDate.parse("2020-03-07"), 3L));
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("2.5"), new BigDecimal("50.0000"), LocalDate.parse("2020-03-09"), 3L));
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.P95.name(), new BigDecimal("30"), new BigDecimal("1.5"), new BigDecimal("45.0000"), LocalDate.parse("2020-03-11"), 3L));
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.P95.name(), new BigDecimal("20"), new BigDecimal("4"), new BigDecimal("80.0000"), LocalDate.parse("2020-03-13"), 3L));
+        List<FuelConsumptionRecordSpecifiedByMonthResponse> expectedResult = new ArrayList<>();
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.LPG.name(), new BigDecimal("30"), new BigDecimal("1.5"), new BigDecimal("45.0000"), LocalDate.parse("2020-03-07"), 3L));
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("2.5"), new BigDecimal("50.0000"), LocalDate.parse("2020-03-09"), 3L));
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.P95.name(), new BigDecimal("30"), new BigDecimal("1.5"), new BigDecimal("45.0000"), LocalDate.parse("2020-03-11"), 3L));
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.P95.name(), new BigDecimal("20"), new BigDecimal("4"), new BigDecimal("80.0000"), LocalDate.parse("2020-03-13"), 3L));
 
 
-        List<FuelConsumptionRecordSpecifiedByMonthDto> actualResult = fuelConsumptionService.findFuelConsumptionRecordsByMonthAndDriverId(monthId, driverId);
+        List<FuelConsumptionRecordSpecifiedByMonthResponse> actualResult = fuelConsumptionService.findFuelConsumptionRecordsByMonthAndDriverId(monthId, driverId);
 
         Assertions.assertEquals(expectedResult.size(), actualResult.size());
         Assertions.assertEquals(expectedResult.get(0).getTotalPrice(), actualResult.get(0).getTotalPrice());

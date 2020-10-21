@@ -2,6 +2,8 @@ package com.fuel.consumption.api.dto;
 
 import com.fuel.consumption.model.entity.FuelConsumption;
 import com.fuel.consumption.util.BigDecimalUtil;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,17 +19,32 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FuelConsumptionRecordSpecifiedByMonthDto {
+@ApiModel(description="Fuel consumption record specified by month response")
+public class FuelConsumptionRecordSpecifiedByMonthResponse {
 
+
+
+      @ApiModelProperty(notes="Fuel Type")
       private String fuelType;
+
+      @ApiModelProperty(notes="Fuel Volume")
       private BigDecimal fuelVolume;
+
+      @ApiModelProperty(notes="Fuel Price")
       private BigDecimal fuelPrice;
+
+      @ApiModelProperty(notes="Total Price; Fuel Price * Fuel Volume")
       private BigDecimal totalPrice;
+
+      @ApiModelProperty(notes="Fuel Consumption Date")
       private LocalDate consumptionDate;
+
+      @ApiModelProperty(notes="Driver Id")
       private long driverId;
 
-      public static FuelConsumptionRecordSpecifiedByMonthDto toDto(FuelConsumption entity){
-            FuelConsumptionRecordSpecifiedByMonthDto dto =  new FuelConsumptionRecordSpecifiedByMonthDto();
+
+      public static FuelConsumptionRecordSpecifiedByMonthResponse toDto(FuelConsumption entity){
+            FuelConsumptionRecordSpecifiedByMonthResponse dto =  new FuelConsumptionRecordSpecifiedByMonthResponse();
             dto.setFuelType(entity.getFuelType().name());
             dto.setFuelVolume(entity.getFuelVolume());
             dto.setFuelPrice(entity.getFuelPrice());

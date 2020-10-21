@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fuel.consumption.api.dto.FuelConsumptionRecordSpecifiedByMonthDto;
+import com.fuel.consumption.api.dto.FuelConsumptionRecordSpecifiedByMonthResponse;
 import com.fuel.consumption.api.dto.FuelConsumptionStatisticFuelTypeResponse;
 import com.fuel.consumption.api.dto.FuelConsumptionStatisticResponse;
 import com.fuel.consumption.api.dto.TotalSpentAmountOfMoneyResponse;
@@ -158,9 +158,9 @@ class FuelConsumptionApiTest {
     void findFuelConsumptionRecordsByMonth_success_case() throws Exception {
         String uri = "/api/v1/fuel/consumptions/months/3";
 
-        List<FuelConsumptionRecordSpecifiedByMonthDto> expectedResult = new ArrayList<>();
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("1.5"), new BigDecimal("30.0000"), LocalDate.parse("2020-03-06"), 3L));
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.LPG.name(), new BigDecimal("40"), new BigDecimal("3.5"), new BigDecimal("140.0000"), LocalDate.parse("2020-03-08"), 6L));
+        List<FuelConsumptionRecordSpecifiedByMonthResponse> expectedResult = new ArrayList<>();
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("1.5"), new BigDecimal("30.0000"), LocalDate.parse("2020-03-06"), 3L));
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.LPG.name(), new BigDecimal("40"), new BigDecimal("3.5"), new BigDecimal("140.0000"), LocalDate.parse("2020-03-08"), 6L));
 
         when(fuelConsumptionService.findFuelConsumptionRecordsByMonth(anyInt())).thenReturn(expectedResult);
 
@@ -171,7 +171,7 @@ class FuelConsumptionApiTest {
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
 
-        List<FuelConsumptionRecordSpecifiedByMonthDto> actualResult = JsonUtil.getFuelConsumptionRecordSpecifiedByMonthsFromString(content);
+        List<FuelConsumptionRecordSpecifiedByMonthResponse> actualResult = JsonUtil.getFuelConsumptionRecordSpecifiedByMonthsFromString(content);
 
         Assertions.assertEquals(expectedResult.size(), actualResult.size());
         Assertions.assertEquals(expectedResult.get(0).getTotalPrice(), actualResult.get(0).getTotalPrice());
@@ -183,9 +183,9 @@ class FuelConsumptionApiTest {
 
         String uri = "/api/v1/fuel/consumptions/months/2/3";
 
-        List<FuelConsumptionRecordSpecifiedByMonthDto> expectedResult = new ArrayList<>();
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("1.5"), new BigDecimal("45.0000"), LocalDate.parse("2020-02-07"), 3L));
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthDto(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("2.5"), new BigDecimal("50.0000"), LocalDate.parse("2020-02-09"), 3L));
+        List<FuelConsumptionRecordSpecifiedByMonthResponse> expectedResult = new ArrayList<>();
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("1.5"), new BigDecimal("45.0000"), LocalDate.parse("2020-02-07"), 3L));
+        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("2.5"), new BigDecimal("50.0000"), LocalDate.parse("2020-02-09"), 3L));
 
         when(fuelConsumptionService.findFuelConsumptionRecordsByMonthAndDriverId(anyInt(), anyLong())).thenReturn(expectedResult);
 
@@ -196,7 +196,7 @@ class FuelConsumptionApiTest {
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
 
-        List<FuelConsumptionRecordSpecifiedByMonthDto> actualResult = JsonUtil.getFuelConsumptionRecordSpecifiedByMonthsFromString(content);
+        List<FuelConsumptionRecordSpecifiedByMonthResponse> actualResult = JsonUtil.getFuelConsumptionRecordSpecifiedByMonthsFromString(content);
 
         Assertions.assertEquals(expectedResult.size(), actualResult.size());
         Assertions.assertEquals(expectedResult.get(0).getTotalPrice(), actualResult.get(0).getTotalPrice());

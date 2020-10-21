@@ -20,9 +20,9 @@ public interface FuelConsumptionService {
 
     List<TotalSpentAmountOfMoneyResponse> findTotalSpentAmountOfMoneyByDriverIdAndGroupedByMonth(long driverId);
 
-    List<FuelConsumptionRecordSpecifiedByMonthDto> findFuelConsumptionRecordsByMonth(int month);
+    List<FuelConsumptionRecordSpecifiedByMonthResponse> findFuelConsumptionRecordsByMonth(int month);
 
-    List<FuelConsumptionRecordSpecifiedByMonthDto> findFuelConsumptionRecordsByMonthAndDriverId(int month, long driverId);
+    List<FuelConsumptionRecordSpecifiedByMonthResponse> findFuelConsumptionRecordsByMonthAndDriverId(int month, long driverId);
 
     List<FuelConsumptionStatisticResponse> findEachMonthFuelConsumptionStatisticsGroupedByFuelType();
 
