@@ -1,12 +1,14 @@
 package com.fuel.consumption.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fuel.consumption.api.validator.ValueOfEnum;
 import com.fuel.consumption.model.entity.FuelConsumption;
 import com.fuel.consumption.util.FuelType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -20,20 +22,29 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class FuelConsumptionPostRequest {
 
-    @ApiModelProperty(notes="Fuel Type is mandatory attribute, have to be specified type, for take specified types use 'fuelTypes endpoint'")
+    @ApiModelProperty(notes="Fuel Type is mandatory attribute, have to be specified type. Fuel Types: DIESEL,P95,P98 and LPG")
+    @NotNull
+    @ValueOfEnum(enumClass = FuelType.class, message = "Must be specified types. DIESEL,P95,P98 and LPG")
     private String fuelType;
 
     @ApiModelProperty(notes="Fuel Price is mandatory attribute, have to be positive number")
+    @NotNull
+    @Positive( message = "FuelPrice have to be positive number")
     private BigDecimal fuelPrice;
 
     @ApiModelProperty(notes="Fuel Volume is mandatory attribute, have to be positive number")
+    @NotNull
+    @Positive(message = "FuelVolume have to be positive number")
     private BigDecimal fuelVolume;
 
-    @ApiModelProperty(notes="Fuel Consumption Date is mandatory attribute, have to be  yyyy-MM-dd date format")
+    @ApiModelProperty(notes="Consumption Date is mandatory attribute, have to be  yyyy-MM-dd date format")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @NotNull
     private LocalDate consumptionDate;
 
-    @ApiModelProperty(notes="Driver Id is mandatory attribute, have to be positive number")
+    @ApiModelProperty(notes="Driver ID is mandatory attribute, have to be positive number")
+    @NotNull
+    @Positive( message = "Driver ID have to be positive number")
     private Long driverId;
 
     public static FuelConsumptionPostRequest toDto(FuelConsumption entity){

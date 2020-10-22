@@ -56,8 +56,4 @@ public class TotalSpentAmountOfMoneyDto {
         return fuelVolume.setScale(4,BigDecimal.ROUND_CEILING).stripTrailingZeros();
     }
 
-
-    public BigDecimal getAmount() {
-        return BigDecimalUtil.multiplying(this.fuelPrice, this.fuelVolume);
-    }
 }
