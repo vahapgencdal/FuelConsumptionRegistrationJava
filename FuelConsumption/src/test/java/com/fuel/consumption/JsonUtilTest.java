@@ -1,6 +1,6 @@
 package com.fuel.consumption;
 
-import com.fuel.consumption.api.dto.FuelConsumptionPostRequest;
+import com.fuel.consumption.api.request.FuelReportPostRequest;
 import com.fuel.consumption.util.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -22,7 +22,7 @@ public class JsonUtilTest {
 
     @Test
     public void read_successCase() throws IOException {
-        FuelConsumptionPostRequest fuelConsumptionDtoList = JsonUtil.getJsonObjectFromFile("file:src/test/resources/test-data/json_util_success_case.json");
+        FuelReportPostRequest fuelConsumptionDtoList = JsonUtil.getJsonObjectFromFile("file:src/test/resources/test-data/json_util_success_case.json");
         Assertions.assertNotNull(fuelConsumptionDtoList);
     }
 

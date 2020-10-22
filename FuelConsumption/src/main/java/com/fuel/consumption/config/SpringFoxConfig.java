@@ -29,7 +29,7 @@ public class SpringFoxConfig {
     public static final ApiInfo DEFAULT_API_INFO = new ApiInfo(
             "Fuel Consumption Registration API", "Fuel consumption management application API for small transportation company", "V1.0",
             "Terms of service", DEFAULT_CONTACT,
-            "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0",Arrays.asList());
+            "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0", Arrays.asList());
 
     private static final Set<String> DEFAULT_PRODUCES_AND_CONSUMES =
             new HashSet<>(Arrays.asList("application/json"));

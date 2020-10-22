@@ -3,10 +3,10 @@ package com.fuel.consumption.util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fuel.consumption.api.dto.FuelConsumptionPostRequest;
-import com.fuel.consumption.api.dto.FuelConsumptionRecordSpecifiedByMonthResponse;
-import com.fuel.consumption.api.dto.FuelConsumptionStatisticResponse;
-import com.fuel.consumption.api.dto.TotalSpentAmountOfMoneyResponse;
+import com.fuel.consumption.api.request.FuelReportPostRequest;
+import com.fuel.consumption.api.response.FuelReportResponse;
+import com.fuel.consumption.api.response.FuelReportMonthlyResponse;
+import com.fuel.consumption.api.response.ExpenseReportResponse;
 
 import java.io.IOException;
 import java.net.URL;
@@ -19,55 +19,55 @@ public class JsonUtil {
     private JsonUtil() {
     }
 
-    public static List<FuelConsumptionPostRequest> getJsonListFromFile(String path) throws IOException {
+    public static List<FuelReportPostRequest> getJsonListFromFile(String path) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper.readValue(new URL(path), new TypeReference<List<FuelConsumptionPostRequest>>() {
+        return objectMapper.readValue(new URL(path), new TypeReference<List<FuelReportPostRequest>>() {
         });
     }
 
-    public static FuelConsumptionPostRequest getJsonObjectFromFile(String path) throws IOException {
+    public static FuelReportPostRequest getJsonObjectFromFile(String path) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper.readValue(new URL(path), FuelConsumptionPostRequest.class);
+        return objectMapper.readValue(new URL(path), FuelReportPostRequest.class);
     }
 
     public static String readFileAsString(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)));
     }
 
-    public static List<FuelConsumptionPostRequest> getJsonListFromString(String content) throws IOException {
+    public static List<FuelReportPostRequest> getJsonListFromString(String content) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionPostRequest>>() {
+        return objectMapper.readValue(content, new TypeReference<List<FuelReportPostRequest>>() {
         });
 
     }
 
-    public static List<TotalSpentAmountOfMoneyResponse> getTotalSpentAmountOfMoneyResponsesString(String content) throws IOException {
+    public static List<ExpenseReportResponse> getExpenseReportString(String content) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper.readValue(content, new TypeReference<List<TotalSpentAmountOfMoneyResponse>>() {
+        return objectMapper.readValue(content, new TypeReference<List<ExpenseReportResponse>>() {
         });
 
     }
 
-    public static List<FuelConsumptionRecordSpecifiedByMonthResponse> getFuelConsumptionRecordSpecifiedByMonthsFromString(String content) throws IOException {
+    public static List<FuelReportResponse> getFuelReportsFromString(String content) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionRecordSpecifiedByMonthResponse>>() {
+        return objectMapper.readValue(content, new TypeReference<List<FuelReportResponse>>() {
         });
 
     }
 
-    public static List<FuelConsumptionStatisticResponse> getFuelConsumptionStatisticResponsesFromString(String content) throws IOException {
+    public static List<FuelReportMonthlyResponse> getMonthlyFuelReportsFromString(String content) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper.readValue(content, new TypeReference<List<FuelConsumptionStatisticResponse>>() {
+        return objectMapper.readValue(content, new TypeReference<List<FuelReportMonthlyResponse>>() {
         });
 
     }

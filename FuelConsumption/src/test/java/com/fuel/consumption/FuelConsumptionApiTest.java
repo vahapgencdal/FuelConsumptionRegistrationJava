@@ -4,13 +4,15 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fuel.consumption.api.dto.FuelConsumptionRecordSpecifiedByMonthResponse;
-import com.fuel.consumption.api.dto.FuelConsumptionStatisticFuelTypeResponse;
-import com.fuel.consumption.api.dto.FuelConsumptionStatisticResponse;
-import com.fuel.consumption.api.dto.TotalSpentAmountOfMoneyResponse;
+import com.fuel.consumption.api.response.ExpenseReportResponse;
+import com.fuel.consumption.api.response.FuelReportFuelTypeResponse;
+import com.fuel.consumption.api.response.FuelReportMonthlyResponse;
+import com.fuel.consumption.api.response.FuelReportResponse;
 import com.fuel.consumption.model.service.FuelConsumptionService;
 import com.fuel.consumption.util.FuelType;
+import com.fuel.consumption.util.GroupByType;
 import com.fuel.consumption.util.JsonUtil;
+import com.fuel.consumption.util.ReportPeriod;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -33,8 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,21 +58,9 @@ class FuelConsumptionApiTest {
     @MockBean
     private FuelConsumptionService fuelConsumptionService;
 
-    protected String mapToJson(Object obj) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(obj);
-    }
-
-    protected <T> T mapFromJson(String json, Class<T> clazz)
-            throws JsonParseException, JsonMappingException, IOException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(json, clazz);
-    }
-
     @Test
     void registerFuelConsumption_success_case() throws Exception {
-        String uri = "/api/v1/fuel/consumptions/single";
+        String uri = "/api/v1/fuel/expenses/single";
         String inputJson = JsonUtil.readFileAsString("src/test/resources/test-data/json_util_success_case.json");
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
@@ -83,7 +72,7 @@ class FuelConsumptionApiTest {
 
     @Test
     void registerFuelConsumptionList_success_case() throws Exception {
-        String uri = "/api/v1/fuel/consumptions/list";
+        String uri = "/api/v1/fuel/expenses/list";
         String fuelConsumptionDtoList = JsonUtil.readFileAsString("src/test/resources/test-data/general_test_data.json");
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(uri)
@@ -95,7 +84,7 @@ class FuelConsumptionApiTest {
 
     @Test
     void registerFuelConsumptionListWithFile_success_case() throws Exception {
-        String uri = "/api/v1/fuel/consumptions/file";
+        String uri = "/api/v1/fuel/expenses/file";
         String fuelConsumptionDtoList = JsonUtil.readFileAsString("src/test/resources/test-data/general_test_data.json");
         MockMultipartFile file
                 = new MockMultipartFile(
@@ -109,13 +98,13 @@ class FuelConsumptionApiTest {
     }
 
     @Test
-    void totalSpentAmountOfMoneyGroupedByMonth_success_case() throws Exception {
-        String uri = "/api/v1/fuel/consumptions";
+    void findExpenseReportGroupedByMonth_success_case() throws Exception {
+        String uri = "/api/v1/report/expense?period=" + ReportPeriod.MONTH;
 
-        List<TotalSpentAmountOfMoneyResponse> expectedResult = new ArrayList<>();
-        expectedResult.add(new TotalSpentAmountOfMoneyResponse(Month.JANUARY.name(), new BigDecimal("47.7900")));
+        List<ExpenseReportResponse> expectedResult = new ArrayList<>();
+        expectedResult.add(new ExpenseReportResponse(Month.JANUARY.name(), new BigDecimal("47.7900")));
 
-        when(fuelConsumptionService.findTotalSpentAmountOfMoneyGroupedByMonth()).thenReturn(expectedResult);
+        when(fuelConsumptionService.findExpenseReportByPeriod(ReportPeriod.MONTH.name())).thenReturn(expectedResult);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
@@ -123,22 +112,22 @@ class FuelConsumptionApiTest {
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
-        List<TotalSpentAmountOfMoneyResponse> actualResult = JsonUtil.getTotalSpentAmountOfMoneyResponsesString(content);
+        List<ExpenseReportResponse> actualResult = JsonUtil.getExpenseReportString(content);
 
         Assertions.assertEquals(expectedResult.size(), actualResult.size());
-        Assertions.assertEquals(expectedResult.get(0).getMonth(), actualResult.get(0).getMonth());
+        Assertions.assertEquals(expectedResult.get(0).getTime(), actualResult.get(0).getTime());
         Assertions.assertEquals(expectedResult.get(0).getTotalAmount(), actualResult.get(0).getTotalAmount());
 
     }
 
     @Test
-    void totalSpentAmountOfMoneyByDriverIdAndGroupedByMonth_success_case() throws Exception {
-        String uri = "/api/v1/fuel/consumptions/123";
+    void findExpenseReportGroupedByYear_success_case() throws Exception {
+        String uri = "/api/v1/report/expense?period=" + ReportPeriod.YEAR;
 
-        List<TotalSpentAmountOfMoneyResponse> expectedResult = new ArrayList<>();
-        expectedResult.add(new TotalSpentAmountOfMoneyResponse(Month.JANUARY.name(), new BigDecimal("47.7900")));
+        List<ExpenseReportResponse> expectedResult = new ArrayList<>();
+        expectedResult.add(new ExpenseReportResponse(String.valueOf(2020), new BigDecimal("47.7900")));
 
-        when(fuelConsumptionService.findTotalSpentAmountOfMoneyByDriverIdAndGroupedByMonth(anyLong())).thenReturn(expectedResult);
+        when(fuelConsumptionService.findExpenseReportByPeriod(ReportPeriod.YEAR.name())).thenReturn(expectedResult);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
@@ -146,23 +135,69 @@ class FuelConsumptionApiTest {
         int status = mvcResult.getResponse().getStatus();
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
-        List<TotalSpentAmountOfMoneyResponse> actualResult = JsonUtil.getTotalSpentAmountOfMoneyResponsesString(content);
+        List<ExpenseReportResponse> actualResult = JsonUtil.getExpenseReportString(content);
 
         Assertions.assertEquals(expectedResult.size(), actualResult.size());
-        Assertions.assertEquals(expectedResult.get(0).getMonth(), actualResult.get(0).getMonth());
+        Assertions.assertEquals(expectedResult.get(0).getTime(), actualResult.get(0).getTime());
         Assertions.assertEquals(expectedResult.get(0).getTotalAmount(), actualResult.get(0).getTotalAmount());
 
     }
 
     @Test
-    void findFuelConsumptionRecordsByMonth_success_case() throws Exception {
-        String uri = "/api/v1/fuel/consumptions/months/3";
+    void findExpenseReportByDriverIdAndGroupedByMonth_success_case() throws Exception {
+        String uri = "/api/v1/report/expense/123?period=" + ReportPeriod.MONTH;
 
-        List<FuelConsumptionRecordSpecifiedByMonthResponse> expectedResult = new ArrayList<>();
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("1.5"), new BigDecimal("30.0000"), LocalDate.parse("2020-03-06"), 3L));
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.LPG.name(), new BigDecimal("40"), new BigDecimal("3.5"), new BigDecimal("140.0000"), LocalDate.parse("2020-03-08"), 6L));
+        List<ExpenseReportResponse> expectedResult = new ArrayList<>();
+        expectedResult.add(new ExpenseReportResponse(Month.JANUARY.name(), new BigDecimal("47.7900")));
 
-        when(fuelConsumptionService.findFuelConsumptionRecordsByMonth(anyInt())).thenReturn(expectedResult);
+        when(fuelConsumptionService.findExpenseReportByPeriodAndDriverId(anyLong(), anyString())).thenReturn(expectedResult);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+        String content = mvcResult.getResponse().getContentAsString();
+        List<ExpenseReportResponse> actualResult = JsonUtil.getExpenseReportString(content);
+
+        Assertions.assertEquals(expectedResult.size(), actualResult.size());
+        Assertions.assertEquals(expectedResult.get(0).getTime(), actualResult.get(0).getTime());
+        Assertions.assertEquals(expectedResult.get(0).getTotalAmount(), actualResult.get(0).getTotalAmount());
+
+    }
+
+    @Test
+    void findExpenseReportByDriverIdAndGroupedByYear_success_case() throws Exception {
+        String uri = "/api/v1/report/expense/123?period=" + ReportPeriod.YEAR;
+
+        List<ExpenseReportResponse> expectedResult = new ArrayList<>();
+        expectedResult.add(new ExpenseReportResponse(String.valueOf(2020), new BigDecimal("47.7900")));
+
+        when(fuelConsumptionService.findExpenseReportByPeriodAndDriverId(anyLong(), anyString())).thenReturn(expectedResult);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri)
+                .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+        String content = mvcResult.getResponse().getContentAsString();
+        List<ExpenseReportResponse> actualResult = JsonUtil.getExpenseReportString(content);
+
+        Assertions.assertEquals(expectedResult.size(), actualResult.size());
+        Assertions.assertEquals(expectedResult.get(0).getTime(), actualResult.get(0).getTime());
+        Assertions.assertEquals(expectedResult.get(0).getTotalAmount(), actualResult.get(0).getTotalAmount());
+
+    }
+
+    @Test
+    void fuelReportByMonthId_success_case() throws Exception {
+        String uri = "/api/v1/report/fuel/3";
+
+        List<FuelReportResponse> expectedResult = new ArrayList<>();
+        expectedResult.add(new FuelReportResponse(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("1.5"), new BigDecimal("30.0000"), LocalDate.parse("2020-03-06"), 3L));
+        expectedResult.add(new FuelReportResponse(FuelType.LPG.name(), new BigDecimal("40"), new BigDecimal("3.5"), new BigDecimal("140.0000"), LocalDate.parse("2020-03-08"), 6L));
+
+        when(fuelConsumptionService.fuelReports(anyInt())).thenReturn(expectedResult);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
@@ -171,7 +206,7 @@ class FuelConsumptionApiTest {
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
 
-        List<FuelConsumptionRecordSpecifiedByMonthResponse> actualResult = JsonUtil.getFuelConsumptionRecordSpecifiedByMonthsFromString(content);
+        List<FuelReportResponse> actualResult = JsonUtil.getFuelReportsFromString(content);
 
         Assertions.assertEquals(expectedResult.size(), actualResult.size());
         Assertions.assertEquals(expectedResult.get(0).getTotalPrice(), actualResult.get(0).getTotalPrice());
@@ -179,15 +214,15 @@ class FuelConsumptionApiTest {
     }
 
     @Test
-    void findFuelConsumptionRecordsByMonthAndDriverId_success_case() throws Exception {
+    void fuelReportByMonthIdAndDriverId_success_case() throws Exception {
 
-        String uri = "/api/v1/fuel/consumptions/months/2/3";
+        String uri = "/api/v1/report/fuel/2/3";
 
-        List<FuelConsumptionRecordSpecifiedByMonthResponse> expectedResult = new ArrayList<>();
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("1.5"), new BigDecimal("45.0000"), LocalDate.parse("2020-02-07"), 3L));
-        expectedResult.add(new FuelConsumptionRecordSpecifiedByMonthResponse(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("2.5"), new BigDecimal("50.0000"), LocalDate.parse("2020-02-09"), 3L));
+        List<FuelReportResponse> expectedResult = new ArrayList<>();
+        expectedResult.add(new FuelReportResponse(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("1.5"), new BigDecimal("45.0000"), LocalDate.parse("2020-02-07"), 3L));
+        expectedResult.add(new FuelReportResponse(FuelType.LPG.name(), new BigDecimal("20"), new BigDecimal("2.5"), new BigDecimal("50.0000"), LocalDate.parse("2020-02-09"), 3L));
 
-        when(fuelConsumptionService.findFuelConsumptionRecordsByMonthAndDriverId(anyInt(), anyLong())).thenReturn(expectedResult);
+        when(fuelConsumptionService.fuelReports(anyInt(), anyLong())).thenReturn(expectedResult);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
@@ -196,7 +231,7 @@ class FuelConsumptionApiTest {
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
 
-        List<FuelConsumptionRecordSpecifiedByMonthResponse> actualResult = JsonUtil.getFuelConsumptionRecordSpecifiedByMonthsFromString(content);
+        List<FuelReportResponse> actualResult = JsonUtil.getFuelReportsFromString(content);
 
         Assertions.assertEquals(expectedResult.size(), actualResult.size());
         Assertions.assertEquals(expectedResult.get(0).getTotalPrice(), actualResult.get(0).getTotalPrice());
@@ -204,23 +239,23 @@ class FuelConsumptionApiTest {
     }
 
     @Test
-    void findEachMonthFuelConsumptionStatisticsGroupedByFuelType_success_case() throws Exception {
-        String uri = "/api/v1/fuel/consumptions/statistics";
+    void monthlyFuelReportsGroupedByFuelType_success_case() throws Exception {
+        String uri = "/api/v1/report/fuel/months?groupBy=" + GroupByType.FUEL_TYPE.name();
 
-        FuelConsumptionStatisticResponse fuelConsumptionStatisticResponse = new FuelConsumptionStatisticResponse();
-        fuelConsumptionStatisticResponse.setMonth(Month.AUGUST.name());
-        FuelConsumptionStatisticFuelTypeResponse fuelTypeResponse = new FuelConsumptionStatisticFuelTypeResponse();
+        FuelReportMonthlyResponse fuelReportMonthlyResponse = new FuelReportMonthlyResponse();
+        fuelReportMonthlyResponse.setMonth(Month.AUGUST.name());
+        FuelReportFuelTypeResponse fuelTypeResponse = new FuelReportFuelTypeResponse();
         fuelTypeResponse.setFuelType(FuelType.P95.name());
         fuelTypeResponse.setTotalPrice(new BigDecimal("1062.0000"));
         fuelTypeResponse.setAveragePrice(new BigDecimal("2.9500"));
         fuelTypeResponse.setTotalVolume(new BigDecimal("360.0000"));
-        List<FuelConsumptionStatisticFuelTypeResponse> fuelTypeResponseList = new ArrayList<>();
+        List<FuelReportFuelTypeResponse> fuelTypeResponseList = new ArrayList<>();
         fuelTypeResponseList.add(fuelTypeResponse);
-        fuelConsumptionStatisticResponse.setFuelTypeStatistics(fuelTypeResponseList);
-        List<FuelConsumptionStatisticResponse> er = new ArrayList<>();
-        er.add(fuelConsumptionStatisticResponse);
+        fuelReportMonthlyResponse.setFuelTypeStatistics(fuelTypeResponseList);
+        List<FuelReportMonthlyResponse> er = new ArrayList<>();
+        er.add(fuelReportMonthlyResponse);
 
-        when(fuelConsumptionService.findEachMonthFuelConsumptionStatisticsGroupedByFuelType()).thenReturn(er);
+        when(fuelConsumptionService.monthlyFuelReports(anyString())).thenReturn(er);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
@@ -229,7 +264,7 @@ class FuelConsumptionApiTest {
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
 
-        List<FuelConsumptionStatisticResponse> ar = JsonUtil.getFuelConsumptionStatisticResponsesFromString(content);
+        List<FuelReportMonthlyResponse> ar = JsonUtil.getMonthlyFuelReportsFromString(content);
 
         Assertions.assertEquals(er.size(), ar.size());
         Assertions.assertEquals(er.get(0).getMonth(), ar.get(0).getMonth());
@@ -240,24 +275,24 @@ class FuelConsumptionApiTest {
     }
 
     @Test
-    void findEachMonthFuelConsumptionStatisticsByDriverIdAndGroupedByFuelType_success_case() throws Exception {
-        String uri = "/api/v1/fuel/consumptions/statistics/3";
+    void monthlyFuelReportsByDriverIdAndGroupedByFuelType_success_case() throws Exception {
+        String uri = "/api/v1/report/fuel/months/3?groupBy=" + GroupByType.FUEL_TYPE.name();
 
-        FuelConsumptionStatisticResponse fuelConsumptionStatisticResponse = new FuelConsumptionStatisticResponse();
-        fuelConsumptionStatisticResponse.setMonth(Month.AUGUST.name());
-        FuelConsumptionStatisticFuelTypeResponse fuelTypeResponse = new FuelConsumptionStatisticFuelTypeResponse();
+        FuelReportMonthlyResponse fuelReportMonthlyResponse = new FuelReportMonthlyResponse();
+        fuelReportMonthlyResponse.setMonth(Month.AUGUST.name());
+        FuelReportFuelTypeResponse fuelTypeResponse = new FuelReportFuelTypeResponse();
         fuelTypeResponse.setFuelType(FuelType.P95.name());
         fuelTypeResponse.setTotalPrice(new BigDecimal("1062.0000"));
         fuelTypeResponse.setAveragePrice(new BigDecimal("2.9500"));
         fuelTypeResponse.setTotalVolume(new BigDecimal("360.0000"));
-        List<FuelConsumptionStatisticFuelTypeResponse> fuelTypeResponseList = new ArrayList<>();
+        List<FuelReportFuelTypeResponse> fuelTypeResponseList = new ArrayList<>();
         fuelTypeResponseList.add(fuelTypeResponse);
-        fuelConsumptionStatisticResponse.setFuelTypeStatistics(fuelTypeResponseList);
-        List<FuelConsumptionStatisticResponse> er = new ArrayList<>();
-        er.add(fuelConsumptionStatisticResponse);
+        fuelReportMonthlyResponse.setFuelTypeStatistics(fuelTypeResponseList);
+        List<FuelReportMonthlyResponse> er = new ArrayList<>();
+        er.add(fuelReportMonthlyResponse);
 
 
-        when(fuelConsumptionService.findEachMonthFuelConsumptionStatisticsByDriverIdAndGroupedByFuelType(anyLong())).thenReturn(er);
+        when(fuelConsumptionService.monthlyFuelReports(anyLong(), anyString())).thenReturn(er);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(uri)
                 .accept(MediaType.APPLICATION_JSON_VALUE)).andReturn();
@@ -266,7 +301,7 @@ class FuelConsumptionApiTest {
         assertEquals(200, status);
         String content = mvcResult.getResponse().getContentAsString();
 
-        List<FuelConsumptionStatisticResponse> ar = JsonUtil.getFuelConsumptionStatisticResponsesFromString(content);
+        List<FuelReportMonthlyResponse> ar = JsonUtil.getMonthlyFuelReportsFromString(content);
 
         Assertions.assertEquals(er.size(), ar.size());
         Assertions.assertEquals(er.get(0).getMonth(), ar.get(0).getMonth());

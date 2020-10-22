@@ -1,16 +1,25 @@
 package com.fuel.consumption.model.service;
 
-import com.fuel.consumption.api.dto.*;
+import com.fuel.consumption.api.request.FuelReportPostRequest;
+import com.fuel.consumption.api.response.ExpenseReportResponse;
+import com.fuel.consumption.api.response.FuelReportFuelTypeResponse;
+import com.fuel.consumption.api.response.FuelReportMonthlyResponse;
+import com.fuel.consumption.api.response.FuelReportResponse;
 import com.fuel.consumption.model.entity.FuelConsumption;
 import com.fuel.consumption.model.repository.FuelConsumptionRepository;
 import com.fuel.consumption.util.BigDecimalUtil;
+import com.fuel.consumption.util.GroupByType;
+import com.fuel.consumption.util.ReportPeriod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -26,37 +35,42 @@ public class FuelConsumptionServiceImpl implements FuelConsumptionService {
 
 
     @Override
-    public FuelConsumption insert(FuelConsumptionPostRequest fuelConsumptionDto) {
-        return fuelConsumptionRepository.save(FuelConsumptionPostRequest.toEntity(fuelConsumptionDto));
+    public FuelConsumption insert(FuelReportPostRequest fuelConsumptionDto) {
+        return fuelConsumptionRepository.save(FuelReportPostRequest.toEntity(fuelConsumptionDto));
     }
 
     @Override
-    public List<FuelConsumption> insertAll(List<FuelConsumptionPostRequest> fuelConsumptionDtoList) {
+    public List<FuelConsumption> insertAll(List<FuelReportPostRequest> fuelConsumptionDtoList) {
         List<FuelConsumption> fuelConsumptionList = fuelConsumptionDtoList
                 .stream()
-                .map(FuelConsumptionPostRequest::toEntity)
+                .map(FuelReportPostRequest::toEntity)
                 .collect(Collectors.toList());
-            return fuelConsumptionRepository.saveAll(fuelConsumptionList);
+        return fuelConsumptionRepository.saveAll(fuelConsumptionList);
     }
 
     @Override
-    public List<TotalSpentAmountOfMoneyResponse> findTotalSpentAmountOfMoneyGroupedByMonth() {
-        List<TotalSpentAmountOfMoneyDto> items = fuelConsumptionRepository.findAllTotalSpentAmountOfMoney();
+    public List<ExpenseReportResponse> findExpenseReportByPeriod(String period) {
 
-        return groupTotalSpentAmountOfMoney(items);
+        List<FuelConsumption> items = fuelConsumptionRepository.findAll();
+
+        return getExpenseReportByPeriod(items, period);
     }
 
     @Override
-    public List<TotalSpentAmountOfMoneyResponse> findTotalSpentAmountOfMoneyByDriverIdAndGroupedByMonth(long driverId) {
-        List<TotalSpentAmountOfMoneyDto> items = fuelConsumptionRepository.findAllTotalSpentAmountOfMoneyByDriverId(driverId);
+    public List<ExpenseReportResponse> findExpenseReportByPeriodAndDriverId(long driverId, String period) {
+        List<FuelConsumption> items = fuelConsumptionRepository.findByDriverId(driverId);
 
-        return groupTotalSpentAmountOfMoney(items);
+        return getExpenseReportByPeriod(items, period);
     }
 
-    private List<TotalSpentAmountOfMoneyResponse> groupTotalSpentAmountOfMoney(List<TotalSpentAmountOfMoneyDto> items) {
+    private List<ExpenseReportResponse> getExpenseReportByPeriod(List<FuelConsumption> items, final String period) {
         return items
                 .stream()
-                .collect(Collectors.groupingBy(TotalSpentAmountOfMoneyDto::getMonth))
+                .collect(Collectors.groupingBy(fc -> {
+                    return ReportPeriod.MONTH.name().equals(period) ?
+                            fc.getConsumptionDate().getMonth().getValue() :
+                            fc.getConsumptionDate().getYear();
+                }))
                 .entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
@@ -69,11 +83,13 @@ public class FuelConsumptionServiceImpl implements FuelConsumptionService {
                 )
                 .entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
-                .map(TotalSpentAmountOfMoneyResponse::toResponse).collect(Collectors.toList());
+                .map(entry -> ExpenseReportResponse.toResponse(entry, period))
+                .collect(Collectors.toList());
     }
 
+
     @Override
-    public List<FuelConsumptionRecordSpecifiedByMonthResponse> findFuelConsumptionRecordsByMonth(int month)  {
+    public List<FuelReportResponse> fuelReports(int month) {
         List<FuelConsumption> fuelConsumptionList =
                 fuelConsumptionRepository.findAll(
                         (Specification<FuelConsumption>) (root, query, cb) -> {
@@ -83,13 +99,13 @@ public class FuelConsumptionServiceImpl implements FuelConsumptionService {
                             predicates.add(cb.equal(cb.function("MONTH", Integer.class, root.get("consumptionDate")), month));
 
                             return cb.and(predicates.toArray(new Predicate[0]));
-                });
+                        });
 
         return getGroupOfFullConsumptionList(fuelConsumptionList);
     }
 
     @Override
-    public List<FuelConsumptionRecordSpecifiedByMonthResponse> findFuelConsumptionRecordsByMonthAndDriverId(int month, long driverId) {
+    public List<FuelReportResponse> fuelReports(int month, long driverId) {
         List<FuelConsumption> fuelConsumptionList =
                 fuelConsumptionRepository.findAll(
                         (Specification<FuelConsumption>) (root, query, cb) -> {
@@ -106,58 +122,66 @@ public class FuelConsumptionServiceImpl implements FuelConsumptionService {
         return getGroupOfFullConsumptionList(fuelConsumptionList);
     }
 
-    private List<FuelConsumptionRecordSpecifiedByMonthResponse> getGroupOfFullConsumptionList(List<FuelConsumption> fuelConsumptionList){
+    private List<FuelReportResponse> getGroupOfFullConsumptionList(List<FuelConsumption> fuelConsumptionList) {
         return fuelConsumptionList.stream()
-                .map(FuelConsumptionRecordSpecifiedByMonthResponse::toDto)
-                .sorted(Comparator.comparing(FuelConsumptionRecordSpecifiedByMonthResponse::getConsumptionDate))
+                .map(FuelReportResponse::toDto)
+                .sorted(Comparator.comparing(FuelReportResponse::getConsumptionDate))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<FuelConsumptionStatisticResponse> findEachMonthFuelConsumptionStatisticsGroupedByFuelType() {
+    public List<FuelReportMonthlyResponse> monthlyFuelReports(String groupBy) {
 
         List<FuelConsumption> fuelConsumptionList = fuelConsumptionRepository.findAll();
 
-        return getStatisticOfFuelConsumptionListByFuelTypeAndMonth(fuelConsumptionList);
+        return getStatisticOfMonthlyFuelReports(fuelConsumptionList, groupBy);
     }
 
     @Override
-    public List<FuelConsumptionStatisticResponse> findEachMonthFuelConsumptionStatisticsByDriverIdAndGroupedByFuelType(long driverId) {
+    public List<FuelReportMonthlyResponse> monthlyFuelReports(long driverId, String groupBy) {
 
-        List<FuelConsumption> fuelConsumptionList  = fuelConsumptionRepository.findByDriverId(driverId);
+        List<FuelConsumption> fuelConsumptionList = fuelConsumptionRepository.findByDriverId(driverId);
 
-        return getStatisticOfFuelConsumptionListByFuelTypeAndMonth(fuelConsumptionList);
+        return getStatisticOfMonthlyFuelReports(fuelConsumptionList, groupBy);
     }
 
-    private List<FuelConsumptionStatisticResponse> getStatisticOfFuelConsumptionListByFuelTypeAndMonth(List<FuelConsumption> fuelConsumptions){
+    private List<FuelReportMonthlyResponse> getStatisticOfMonthlyFuelReports(List<FuelConsumption> fuelConsumptions, final String groupBy) {
         return fuelConsumptions.stream()
                 .collect(Collectors.groupingBy(fuelConsumption -> fuelConsumption.getConsumptionDate().getMonth().getValue()))
                 .entrySet().stream()
                 .map(integerListEntry -> {
-                    List<FuelConsumptionStatisticFuelTypeResponse> fuelTypeConsumptions = integerListEntry.getValue()
+                    List<FuelReportFuelTypeResponse> fuelTypeConsumptions = integerListEntry.getValue()
                             .stream()
-                            .collect(Collectors.groupingBy(FuelConsumption::getFuelType))
+                            .collect(Collectors.groupingBy(fuelConsumption -> getValueOfGroupBy(groupBy, fuelConsumption)))
                             .entrySet().stream()
-                            .map(FuelConsumptionStatisticFuelTypeResponse::toResponse)
+                            .map(FuelReportFuelTypeResponse::toResponse)
                             .collect(Collectors.toList());
 
-                    return FuelConsumptionStatisticResponse.toResponse(integerListEntry.getKey(),fuelTypeConsumptions);
+                    return FuelReportMonthlyResponse.toResponse(integerListEntry.getKey(), fuelTypeConsumptions);
                 }).collect(Collectors.toList());
     }
 
+    public static final String getValueOfGroupBy(String groupBy, FuelConsumption fuelConsumption) {
+        if (GroupByType.FUEL_TYPE.name().equals(groupBy)) {
+            return fuelConsumption.getFuelType().name();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     @Override
-    public List<FuelConsumptionPostRequest> findAll() {
+    public List<FuelReportPostRequest> findAll() {
         return fuelConsumptionRepository.findAll()
                 .stream()
-                .map(FuelConsumptionPostRequest::toDto)
+                .map(FuelReportPostRequest::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<FuelConsumptionPostRequest> findAllByDriverId(long driverId) {
+    public List<FuelReportPostRequest> findAllByDriverId(long driverId) {
         return fuelConsumptionRepository.findByDriverId(driverId)
                 .stream()
-                .map(FuelConsumptionPostRequest::toDto)
+                .map(FuelReportPostRequest::toDto)
                 .collect(Collectors.toList());
 
     }

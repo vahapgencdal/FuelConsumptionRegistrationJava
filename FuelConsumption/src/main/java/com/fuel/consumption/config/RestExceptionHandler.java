@@ -1,6 +1,5 @@
 package com.fuel.consumption.config;
 
-import com.fuel.consumption.exception.FileIsEmptyException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,9 @@
 package com.fuel.consumption.model.service;
 
-import com.fuel.consumption.api.dto.*;
+import com.fuel.consumption.api.request.FuelReportPostRequest;
+import com.fuel.consumption.api.response.ExpenseReportResponse;
+import com.fuel.consumption.api.response.FuelReportMonthlyResponse;
+import com.fuel.consumption.api.response.FuelReportResponse;
 import com.fuel.consumption.model.entity.FuelConsumption;
 
 import java.util.List;
@@ -12,23 +15,23 @@ import java.util.List;
 
 public interface FuelConsumptionService {
 
-    FuelConsumption insert(FuelConsumptionPostRequest fuelConsumptionDto);
+    FuelConsumption insert(FuelReportPostRequest fuelConsumptionDto);
 
-    List<FuelConsumption> insertAll(List<FuelConsumptionPostRequest> fuelConsumptionDtoList);
+    List<FuelConsumption> insertAll(List<FuelReportPostRequest> fuelConsumptionDtoList);
 
-    List<TotalSpentAmountOfMoneyResponse> findTotalSpentAmountOfMoneyGroupedByMonth();
+    List<ExpenseReportResponse> findExpenseReportByPeriod(String period);
 
-    List<TotalSpentAmountOfMoneyResponse> findTotalSpentAmountOfMoneyByDriverIdAndGroupedByMonth(long driverId);
+    List<ExpenseReportResponse> findExpenseReportByPeriodAndDriverId(long driverId, String period);
 
-    List<FuelConsumptionRecordSpecifiedByMonthResponse> findFuelConsumptionRecordsByMonth(int month);
+    List<FuelReportResponse> fuelReports(int month);
 
-    List<FuelConsumptionRecordSpecifiedByMonthResponse> findFuelConsumptionRecordsByMonthAndDriverId(int month, long driverId);
+    List<FuelReportResponse> fuelReports(int month, long driverId);
 
-    List<FuelConsumptionStatisticResponse> findEachMonthFuelConsumptionStatisticsGroupedByFuelType();
+    List<FuelReportMonthlyResponse> monthlyFuelReports(String groupBy);
 
-    List<FuelConsumptionStatisticResponse> findEachMonthFuelConsumptionStatisticsByDriverIdAndGroupedByFuelType(long driverId);
+    List<FuelReportMonthlyResponse> monthlyFuelReports(long driverId, String groupBy);
 
-    List<FuelConsumptionPostRequest> findAll();
+    List<FuelReportPostRequest> findAll();
 
-    List<FuelConsumptionPostRequest> findAllByDriverId(long driverId);
+    List<FuelReportPostRequest> findAllByDriverId(long driverId);
 }
