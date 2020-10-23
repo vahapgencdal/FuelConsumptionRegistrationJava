@@ -216,8 +216,8 @@ we can create fuel-consumption-api interface application with Raml and after tha
 in fuel-consumption-api we could use Raml to the jax-rs plugin will create our resource APIs.   
 when we implement the API application our Rest API would be ready. then we would not need to use spring application for creating Rest API.
 
-in the other way, we can use google-guava for dependency injection then we would not use spring dependency application.   
-I created my old application example we can check how I implemented jax-rs and google-guava there.
+in the other way, we can use google guice for dependency injection then we would not use spring dependency application.   
+I created my old application example we can check how I implemented jax-rs and google-guice there.
 URL : https://github.com/vahapgencdal/ebank 
 
       
